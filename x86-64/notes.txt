@@ -1,0 +1,1266 @@
+IP : 10.10.165.172
+Username : tryhackme
+Password : reismyfavl33t
+Tool for RE : r2 reverse engineering framework
+Link : https://github.com/radare/radare2
+
+    This room will use the AT&T syntax. In general, people either use the AT&T syntax or the Intel Syntax 
+	differences in below link
+	http://web.mit.edu/rhel-doc/3/rhel-as-en-3/i386-syntax.html
+
+    This room aims to be a gentle introduction to radare2. While they are not shown here, radare has a lot of 
+	powerful features and tools which can be found in below links.
+	https://github.com/radare/radare2/blob/master/doc/intro.md
+	https://gist.github.com/williballenthin/6857590dab3e2a6559d7
+	https://web.archive.org/web/20180312191821/http://www.radare.org/get/THC2018.pdf
+
+    As soon as your start r2, remember to enter e asm.syntax=att to ensure that you are using the AT&T syntax.
+    
+    The addresses shown on the images in the tasks below may be different from the addresses you view when you 
+	disassemble the files.
+
+Note : We can use https://www.hexadecimaldictionary.com/ for converting hexadecimal to decimal format.
+
+
+tryhackme@ip-10-10-36-50:~/introduction$ ls
+intro  intro.c
+tryhackme@ip-10-10-36-50:~/introduction$ ./intro
+value for a is 1 and b is 2
+value of a is 2 and b is 1
+tryhackme@ip-10-10-36-50:~/introduction$ r2 -d intro
+Process with PID 1263 started...
+= attach 1263 1263
+bin.baddr 0x5654b4345000
+Using 0x5654b4345000
+asm.bits 64
+ -- Emulate the base address of a file with e file.baddr.
+[0x7f82fd619090]> 
+
+
+This will open the binary in debugging mode. Once the binary is open, one of the first things to do is ask r2 to analyze the program, and this can be 
+done by typing in: aa -- Which is the most common analysis command. It analyses all symbols and entry points in the executable.
+
+Then run e asm.syntax=att -- to set the disassembly syntax to AT&T.
+
+The analysis in this case involves extracting function names, flow control information and much more! r2 instructions are usually based on a single 
+character, so it is easy to get more information about the commands. For general help, run: ?
+
+[0x7f82fd619090]> aa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[0x7f82fd619090]> e asm.syntax=att
+[0x7f82fd619090]> ?
+Usage: [.][times][cmd][~grep][@[@iter]addr!size][|>pipe] ; ...   
+Append '?' to any char command to get detailed help
+Prefix with number to repeat command N times (f.ex: 3x)
+| %var=value              alias for 'env' command
+| *[?] off[=[0x]value]    pointer read/write data/values (see ?v, wx, wv)
+| (macro arg0 arg1)       manage scripting macros
+| .[?] [-|(m)|f|!sh|cmd]  Define macro or load r2, cparse or rlang file
+| _[?]                    Print last output
+| =[?] [cmd]              send/listen for remote commands (rap://, raps://, udp://, http://, <fd>)
+| <[...]                  push escaped string into the RCons.readChar buffer
+| /[?]                    search for bytes, regexps, patterns, ..
+| ![?] [cmd]              run given command as in system(3)
+| #[?] !lang [..]         Hashbang to run an rlang script
+| a[?]                    analysis commands
+| b[?]                    display or change the block size
+| c[?] [arg]              compare block with given data
+| C[?]                    code metadata (comments, format, hints, ..)
+| d[?]                    debugger commands
+| e[?] [a[=b]]            list/get/set config evaluable vars
+| f[?] [name][sz][at]     add flag at current address
+| g[?] [arg]              generate shellcodes with r_egg
+| i[?] [file]             get info about opened file from r_bin
+| k[?] [sdb-query]        run sdb-query. see k? for help, 'k *', 'k **' ...
+| l [filepattern]         list files and directories
+| L[?] [-] [plugin]       list, unload load r2 plugins
+| m[?]                    mountpoints commands
+| o[?] [file] ([offset])  open file at optional address
+| p[?] [len]              print current block with format and length
+| P[?]                    project management utilities
+| q[?] [ret]              quit program with a return value
+| r[?] [len]              resize file
+| s[?] [addr]             seek to address (also for '0x', '0x1' == 's 0x1')
+| t[?]                    types, noreturn, signatures, C parser and more
+| T[?] [-] [num|msg]      Text log utility (used to chat, sync, log, ...)
+| u[?]                    uname/undo seek/write
+| v                       visual mode (v! = panels, vv = fcnview, vV = fcngraph, vVV = callgraph)
+| w[?] [str]              multiple write operations
+| x[?] [len]              alias for 'px' (print hexadecimal)
+| y[?] [len] [[[@]addr    Yank/paste bytes from/to memory
+| z[?]                    zignatures management
+| ?[??][expr]             Help or evaluate math expression
+| ?$?                     show available '$' variables and aliases
+| ?@?                     misc help for '@' (seek), '~' (grep) (see ~??)
+| ?>?                     output redirection
+[0x7f82fd619090]> 
+
+[0x7f82fd619090]> a?
+Usage: a  [abdefFghoprxstc] [...]
+| aa[?]              analyze all (fcns + bbs) (aa0 to avoid sub renaming)
+| a8 [hexpairs]      analyze bytes
+| ab[b] [addr]       analyze block at given address
+| abb [len]          analyze N basic blocks in [len] (section.size by default)
+| ac[?]              manage classes
+| aC[?]              analyze function call
+| aCe[?]             same as aC, but uses esil with abte to emulate the function
+| ad[?]              analyze data trampoline (wip)
+| ad [from] [to]     analyze data pointers to (from-to)
+| ae[?] [expr]       analyze opcode eval expression (see ao)
+| af[?]              analyze Functions
+| aF                 same as above, but using anal.depth=1
+| ag[?] [options]    draw graphs in various formats
+| ah[?]              analysis hints (force opcode size, ...)
+| ai [addr]          address information (show perms, stack, heap, ...)
+| aL                 list all asm/anal plugins (e asm.arch=?)
+| an [name] [@addr]  show/rename/create whatever flag/function is used at addr
+| ao[?] [len]        analyze Opcodes (or emulate it)
+| aO[?] [len]        Analyze N instructions in M bytes
+| ap                 find prelude for current offset
+| ar[?]              like 'dr' but for the esil vm. (registers)
+| as[?] [num]        analyze syscall using dbg.reg
+| av[?] [.]          show vtables
+| ax[?]              manage refs/xrefs (see also afx?)
+[0x7f82fd619090]> 
+
+
+Once the analysis is complete, you would want to know where to start analysing from - most programs have an entry point defined as main. To find a list of the functions run: afl
+
+[0x7f82fd619090]> afl
+0x5654b4345560    1 42           entry0
+0x5654b4545fe0    1 4124         reloc.__libc_start_main
+0x5654b4345590    4 50   -> 40   sym.deregister_tm_clones
+0x5654b43455d0    4 66   -> 57   sym.register_tm_clones
+0x5654b4345620    5 58   -> 51   entry.fini0
+0x5654b4345550    1 6            sym..plt.got
+0x5654b4345660    1 10           entry.init0
+0x5654b4345730    1 2            sym.__libc_csu_fini
+0x5654b4345734    1 9            sym._fini
+0x5654b43456c0    4 101          sym.__libc_csu_init
+0x5654b434566a    1 78           main
+0x5654b4345540    1 6            sym.imp.__printf_chk
+0x5654b4345510    3 23           sym._init
+0x5654b4345000    3 97   -> 123  map.home_tryhackme_introduction_intro.r_x
+[0x7f82fd619090]> 
+
+
+As seen here, there actually is a function at main. Let’s examine the assembly code at main by running the command
+
+pdf @main
+
+Where pdf means print disassembly function. Doing so will give us the following view
+
+[0x7f82fd619090]> pdf @main
+/ (fcn) main 78
+|   int main (int argc, char **argv, char **envp);
+|           ; DATA XREF from entry0 (0x5654b434557d)
+|           0x5654b434566a      4883ec08       subq $8, %rsp
+|           0x5654b434566e      b902000000     movl $2, %ecx
+|           0x5654b4345673      ba01000000     movl $1, %edx
+|           0x5654b4345678      488d35c90000.  leaq str.value_for_a_is__d_and_b_is__d, %rsi ; 0x5654b4345748 ; "value for a is %d and b is %d\n"
+|           0x5654b434567f      bf01000000     movl $1, %edi
+|           0x5654b4345684      b800000000     movl $0, %eax
+|           0x5654b4345689      e8b2feffff     callq sym.imp.__printf_chk
+|           0x5654b434568e      b901000000     movl $1, %ecx
+|           0x5654b4345693      ba02000000     movl $2, %edx
+|           0x5654b4345698      488d35c90000.  leaq str.value_of_a_is__d_and_b_is__d, %rsi ; 0x5654b4345768 ; "value of a is %d and b is %d\n"
+|           0x5654b434569f      bf01000000     movl $1, %edi
+|           0x5654b43456a4      b800000000     movl $0, %eax
+|           0x5654b43456a9      e892feffff     callq sym.imp.__printf_chk
+|           0x5654b43456ae      b800000000     movl $0, %eax
+|           0x5654b43456b3      4883c408       addq $8, %rsp
+\           0x5654b43456b7      c3             retq
+[0x7f82fd619090]> 
+
+
+As we can see from above, the values on the complete left column are memory addresses of the instructions, and these are usually stored in a structure called 
+the stack(which we will talk about later). The middle column contains the instructions encoded in bytes(what is usually the machine code), and the last 
+column actually contains the human readable instructions. 
+
+The core of assembly language involves using registers to do the following:
+
+    Transfer data between memory and register, and vice versa
+
+    Perform arithmetic operations on registers and data
+
+    Transfer control to other parts of the program
+
+Since the architecture is x86-64, the registers are 64 bit and Intel has a list of 16 registers:
+
+64 bit		32 bit
+
+%rax		%eax
+
+%rbx		%ebx
+
+%rcx		%ecx
+
+%rdx		%edx
+
+%rsi		%esi
+
+%rdi		%edi
+
+%rsp		%esp
+
+%rbp		%ebp
+
+%r8		%r8d
+
+%r9		%r9d
+
+%r10		%r10d
+
+%r11		%r11d
+
+%r12		%r12d
+
+%r13		%r13d
+
+%r14		%r14d
+
+%r15		%r15d
+
+
+Even though the registers are 64 bit, meaning they can hold up to 64 bits of data, other parts of the registers can also be referenced. In this case, 
+registers can also be referenced as 32 bit values as shown. What isn’t shown is that registers can be referenced as 16 bit and 8 bit
+(higher 4 bit and lower 4 bit). 
+
+The first 6 registers are known as general purpose registers. The %rsp is the stack pointer and it points to the top of the stack which contains the most 
+recent memory address. The stack is a data structure that manages memory for programs. %rbp is a frame pointer and points to the frame of the function 
+currently being executed - every function is executed in a new frame. To move data using registers, the following instruction is used:
+
+movq source, destination
+
+This involves:
+
+    Transferring constants(which are prefixed using the $ operator) e.g. movq $3 rax would move the constant 3 to the register
+
+    Transferring values from a register e.g. movq %rax %rbx which involves moving value from rax to rbx
+
+    Transferring values from memory which is shown by putting registers inside brackets e.g. movq %rax (%rbx) which means move value stored in %rax to 
+	memory location represented by %rbx.
+
+
+The last letter of the mov instruction represents the size of the data:
+
+
+Intel Data Type		Suffix		Size(bytes)
+
+Byte			b		1
+
+Word			w		2
+
+Double Word		l		4
+
+Quad Word		q		8
+
+Quad Word		q		8
+
+Single Precision	s		4
+
+Double Precision	l		8
+
+
+When dealing with memory manipulation using registers, there are other cases to be considered:
+
+    (Rb, Ri) = MemoryLocation[Rb + Ri]
+
+    D(Rb, Ri) = MemoryLocation[Rb + Ri + D]
+
+    (Rb, Ri, S) = MemoryLocation(Rb + S * Ri]
+
+    D(Rb, Ri, S) = MemoryLocation[Rb + S * Ri + D]
+
+Some other important instructions are:
+
+    leaq source, destination: this instruction sets destination to the address denoted by the expression in source
+
+    addq source, destination: destination = destination + source
+
+    subq source, destination: destination = destination - source
+
+    imulq source, destination: destination = destination * source
+
+    salq source, destination: destination = destination << source where << is the left bit shifting operator
+
+    sarq source, destination: destination = destination >> source where >> is the right bit shifting operator
+
+    xorq source, destination: destination = destination XOR source
+
+    andq source, destination: destination = destination & source
+
+    orq source, destination: destination = destination | source
+
+Before understanding how programs work, it is important to understand registers, memory manipulation and some basic instructions. The next sections will have more hands on use of radare2.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+The general format of an if statement is
+
+if(condition){
+
+  do-stuff-here
+
+}else if(condition) //this is an optional condition {
+
+  do-stuff-here
+
+}else {
+
+  do-stuff-here
+
+}
+
+
+If statements use 3 important instructions in assembly:
+
+    cmpq source2, source1: it is like computing a-b without setting destination
+
+    testq source2, source1: it is like computing a&b without setting destination
+
+Jump instructions are used to transfer control to different instructions, and there are different types of jumps:
+
+Jump Type	Description
+
+jmp		Unconditional
+
+je		Equal/Zero
+
+jne		Not Equal/Not Zero
+
+js		Negative
+
+jns		Nonnegative
+
+jg		Greater
+
+jge		Greater or Equal
+
+jl		Less
+
+jle		Less or Equal
+
+ja		Above(unsigned)
+
+jb		Below(unsigned)
+
+
+The last 2 values of the table refer to unsigned integers. Unsigned integers cannot be negative while signed integers represent both positive and negative values. 
+SInce the computer needs to differentiate between them, it uses different methods to interpret these values. For signed integers, it uses something called the 
+two’s complement representation and for unsigned integers it uses normal binary calculations. 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+										IF condition
+
+if1 execution:
+
+Go to the if-statement folder and Start r2 with r2 -d if1
+
+
+And run the following commands:
+
+aaa
+
+afl
+
+pdf @main
+
+
+This analyses the program, lists the functions and disassembles the main function.
+
+
+
+tryhackme@ip-10-10-36-50:~/if-statement$ ls
+if1  if1.c  if2
+tryhackme@ip-10-10-36-50:~/if-statement$ r2 -d if1
+Process with PID 1452 started...
+= attach 1452 1452
+bin.baddr 0x55ebd6515000
+Using 0x55ebd6515000
+asm.bits 64
+ -- The motion picture contained in this videodisc is protected under the copyright laws.
+[0x7f74bb3f6090]> aa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[0x7f74bb3f6090]> afl
+0x55ebd65154f0    1 42           entry0
+0x55ebd6715fe0    1 4124         reloc.__libc_start_main
+0x55ebd6515520    4 50   -> 40   sym.deregister_tm_clones
+0x55ebd6515560    4 66   -> 57   sym.register_tm_clones
+0x55ebd65155b0    5 58   -> 51   entry.fini0
+0x55ebd65154e0    1 6            sym.imp.__cxa_finalize
+0x55ebd65155f0    1 10           entry.init0
+0x55ebd65156a0    1 2            sym.__libc_csu_fini
+0x55ebd65156a4    1 9            sym._fini
+0x55ebd6515630    4 101          sym.__libc_csu_init
+0x55ebd65155fa    4 43           main
+0x55ebd65154b8    3 23           sym._init
+[0x7f74bb3f6090]> pdf @main
+/ (fcn) main 43
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55ebd651550d)
+|           0x55ebd65155fa      55             pushq %rbp
+|           0x55ebd65155fb      4889e5         movq %rsp, %rbp
+|           0x55ebd65155fe      c745f8030000.  movl $3, var_8h
+|           0x55ebd6515605      c745fc040000.  movl $4, var_4h
+|           0x55ebd651560c      8b45f8         movl var_8h, %eax
+|           0x55ebd651560f      3b45fc         cmpl var_4h, %eax
+|       ,=< 0x55ebd6515612      7d06           jge 0x55ebd651561a
+|       |   0x55ebd6515614      8345f805       addl $5, var_8h
+|      ,==< 0x55ebd6515618      eb04           jmp 0x55ebd651561e
+|      |`-> 0x55ebd651561a      8345fc03       addl $3, var_4h
+|      |    ; CODE XREF from main (0x55ebd6515618)
+|      `--> 0x55ebd651561e      b800000000     movl $0, %eax
+|           0x55ebd6515623      5d             popq %rbp
+\           0x55ebd6515624      c3             retq
+[0x7f74bb3f6090]> 
+
+
+ We’ll then start by setting a break point on the jge and the jmp instruction by using the command:
+
+db 0x55ae52836612(which is the hex address of the jge instruction) 
+
+db 0x55ae52836618(which is the hex address of the jmp instruction)
+
+
+We’ve added breakpoints to stop the execution of the program at those points so we can see the state of the program. Doing so will show the following:
+
+[0x7f74bb3f6090]> db 0x55ebd6515612
+[0x7f74bb3f6090]> db 0x55ebd6515618
+[0x7f74bb3f6090]> pdf @main
+/ (fcn) main 43
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55ebd651550d)
+|           0x55ebd65155fa      55             pushq %rbp
+|           0x55ebd65155fb      4889e5         movq %rsp, %rbp
+|           0x55ebd65155fe      c745f8030000.  movl $3, var_8h
+|           0x55ebd6515605      c745fc040000.  movl $4, var_4h
+|           0x55ebd651560c      8b45f8         movl var_8h, %eax
+|           0x55ebd651560f      3b45fc         cmpl var_4h, %eax
+|       ,=< 0x55ebd6515612 b    7d06           jge 0x55ebd651561a
+|       |   0x55ebd6515614      8345f805       addl $5, var_8h
+|      ,==< 0x55ebd6515618 b    eb04           jmp 0x55ebd651561e
+|      |`-> 0x55ebd651561a      8345fc03       addl $3, var_4h
+|      |    ; CODE XREF from main (0x55ebd6515618)
+|      `--> 0x55ebd651561e      b800000000     movl $0, %eax
+|           0x55ebd6515623      5d             popq %rbp
+\           0x55ebd6515624      c3             retq
+[0x7f74bb3f6090]> 
+
+
+We now run dc to start execution of the program and the program will start execution and stop at the break point. Let’s examine what has happened before hitting the breakpoint:
+
+    The first 2 lines are about pushing the frame pointer onto the stack and saving it(this is about how functions are called, and will be examined later)
+
+    The next 3 lines are about assigning values 3 and 4 to the local arguments/variables var_8h and var_4h. It then stores the value in var_8h in the %eax register. 
+
+    The cmpl instruction compares the value of eax with that of the var_8h argument
+
+Usage: d   # Debug commands
+| db[?]                    Breakpoints commands
+| dbt[?]                   Display backtrace based on dbg.btdepth and dbg.btalgo
+| dc[?]                    Continue execution
+| dd[?]                    File descriptors (!fd in r1)
+| de[-sc] [perm] [rm] [e]  Debug with ESIL (see de?)
+| dg <file>                Generate a core-file (WIP)
+| dH [handler]             Transplant process to a new handler
+| di[?]                    Show debugger backend information (See dh)
+| dk[?]                    List, send, get, set, signal handlers of child
+| dL[?]                    List or set debugger handler
+| dm[?]                    Show memory maps
+| do[?]                    Open process (reload, alias for 'oo')
+| doo[args]                Reopen in debugger mode with args (alias for 'ood')
+| dp[?]                    List, attach to process or thread id
+| dr[?]                    Cpu registers
+| ds[?]                    Step, over, source line
+| dt[?]                    Display instruction traces
+| dw <pid>                 Block prompt until pid dies
+| dx[?]                    Inject and run code on target process (See gs)
+[0x7f74bb3f6090]> dc
+hit breakpoint at: 55ebd6515612
+[0x55ebd6515612]> 
+
+
+To view the value of the registers, type in: dr
+
+[0x55ebd6515612]> dr
+rax = 0x00000003
+rbx = 0x00000000
+rcx = 0x55ebd6515630
+rdx = 0x7ffc98b91af8
+r8 = 0x7f74bb3f0d80
+r9 = 0x7f74bb3f0d80
+r10 = 0x00000000
+r11 = 0x00000000
+r12 = 0x55ebd65154f0
+r13 = 0x7ffc98b91ae0
+r14 = 0x00000000
+r15 = 0x00000000
+rsi = 0x7ffc98b91ae8
+rdi = 0x00000001
+rsp = 0x7ffc98b91a00
+rbp = 0x7ffc98b91a00
+rip = 0x55ebd6515612
+rflags = 0x00000297
+orax = 0xffffffffffffffff
+[0x55ebd6515612]> 
+
+We can see that the value of rax, which is the 64 bit version of eax contains 3. We saw that the jge instruction is jumping based on whether value of eax is greater than var_4h. To see what’s in var_4h, 
+we can see that at top of the main function, it tells us the position of var_4h. Run the command: px @rbp-0x4
+
+And that shows the value of 4. 
+
+We know that eax contains 3, and 3 is not greater than 4, so the jump will not execute. Instead it will move to the next instruction. To check this, run the ds command which seeks/moves onto the next instruction.
+
+[0x7f5cf8806090]> pdf @main
+/ (fcn) main 43
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x562ed12be50d)
+|           0x562ed12be5fa      55             pushq %rbp
+|           0x562ed12be5fb      4889e5         movq %rsp, %rbp
+|           0x562ed12be5fe      c745f8030000.  movl $3, var_8h
+|           0x562ed12be605      c745fc040000.  movl $4, var_4h
+|           0x562ed12be60c      8b45f8         movl var_8h, %eax
+|           0x562ed12be60f      3b45fc         cmpl var_4h, %eax
+|       ,=< 0x562ed12be612      7d06           jge 0x562ed12be61a
+|       |   0x562ed12be614      8345f805       addl $5, var_8h
+|      ,==< 0x562ed12be618      eb04           jmp 0x562ed12be61e
+|      |`-> 0x562ed12be61a      8345fc03       addl $3, var_4h
+|      |    ; CODE XREF from main (0x562ed12be618)
+|      `--> 0x562ed12be61e      b800000000     movl $0, %eax
+|           0x562ed12be623      5d             popq %rbp
+\           0x562ed12be624      c3             retq
+[0x7f5cf8806090]> db 0x562ed12be612
+[0x7f5cf8806090]> db 0x562ed12be618
+[0x7f5cf8806090]> dc
+hit breakpoint at: 562ed12be612
+[0x562ed12be612]> dr
+rax = 0x00000003
+rbx = 0x00000000
+rcx = 0x562ed12be630
+rdx = 0x7ffef9a49db8
+r8 = 0x7f5cf8800d80
+r9 = 0x7f5cf8800d80
+r10 = 0x00000000
+r11 = 0x00000000
+r12 = 0x562ed12be4f0
+r13 = 0x7ffef9a49da0
+r14 = 0x00000000
+r15 = 0x00000000
+rsi = 0x7ffef9a49da8
+rdi = 0x00000001
+rsp = 0x7ffef9a49cc0
+rbp = 0x7ffef9a49cc0
+rip = 0x562ed12be612
+rflags = 0x00000297
+orax = 0xffffffffffffffff
+[0x562ed12be612]> ps @ rbp-0x4
+\x04
+[0x562ed12be612]> 
+
+We know that eax contains 3, and 3 is not greater than 4, so the jump will not execute. Instead it will move to the next instruction. To check this, run the ds command which seeks/moves onto the next instruction.
+
+[0x562ed12be612]> ps @ rbp-0x8
+\x03
+[0x562ed12be612]> ds
+[0x562ed12be612]> pdf @main
+/ (fcn) main 43
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x562ed12be50d)
+|           0x562ed12be5fa      55             pushq %rbp
+|           0x562ed12be5fb      4889e5         movq %rsp, %rbp
+|           0x562ed12be5fe      c745f8030000.  movl $3, var_8h
+|           0x562ed12be605      c745fc040000.  movl $4, var_4h
+|           0x562ed12be60c      8b45f8         movl var_8h, %eax
+|           0x562ed12be60f      3b45fc         cmpl var_4h, %eax
+|       ,=< 0x562ed12be612 b    7d06           jge 0x562ed12be61a
+|       |   ;-- rip:
+|       |   0x562ed12be614      8345f805       addl $5, var_8h
+|      ,==< 0x562ed12be618 b    eb04           jmp 0x562ed12be61e
+|      |`-> 0x562ed12be61a      8345fc03       addl $3, var_4h
+|      |    ; CODE XREF from main (0x562ed12be618)
+|      `--> 0x562ed12be61e      b800000000     movl $0, %eax
+|           0x562ed12be623      5d             popq %rbp
+\           0x562ed12be624      c3             retq
+[0x562ed12be612]>
+
+
+The rip(which is the current instruction pointer) shows that it moves onto the next instruction - which shows we are correct. The current instruction then adds 5 to var_8h which is a local argument. 
+To see that this actually happens, first check the value of var_8h, run ds and check the value again. This will show it increments by 5.
+ 
+[0x562ed12be612]> pdf @main
+/ (fcn) main 43
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x562ed12be50d)
+|           0x562ed12be5fa      55             pushq %rbp
+|           0x562ed12be5fb      4889e5         movq %rsp, %rbp
+|           0x562ed12be5fe      c745f8030000.  movl $3, var_8h
+|           0x562ed12be605      c745fc040000.  movl $4, var_4h
+|           0x562ed12be60c      8b45f8         movl var_8h, %eax
+|           0x562ed12be60f      3b45fc         cmpl var_4h, %eax
+|       ,=< 0x562ed12be612 b    7d06           jge 0x562ed12be61a
+|       |   ;-- rip:
+|       |   0x562ed12be614      8345f805       addl $5, var_8h
+|      ,==< 0x562ed12be618 b    eb04           jmp 0x562ed12be61e
+|      |`-> 0x562ed12be61a      8345fc03       addl $3, var_4h
+|      |    ; CODE XREF from main (0x562ed12be618)
+|      `--> 0x562ed12be61e      b800000000     movl $0, %eax
+|           0x562ed12be623      5d             popq %rbp
+\           0x562ed12be624      c3             retq
+[0x562ed12be612]> ps @ rbp-0x8
+\x03
+[0x562ed12be612]> ds
+[0x562ed12be612]> ps @ rbp-0x8
+\x08
+[0x562ed12be612]> 
+
+
+Note that because we are checking the exact address, we only need to check to 0 offset. The value stored in memory is stored as hex. 
+
+
+[0x562ed12be612]> ps @rbp-0x8
+\x08
+[0x562ed12be612]> px @rbp-0x8
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x7ffef9a49cb8  0800 0000 0400 0000 30e6 2bd1 2e56 0000  ........0.+..V..
+0x7ffef9a49cc8  975b 43f8 5c7f 0000 0100 0000 0000 0000  .[C.\...........
+0x7ffef9a49cd8  a89d a4f9 fe7f 0000 0080 0000 0100 0000  ................
+0x7ffef9a49ce8  fae5 2bd1 2e56 0000 0000 0000 0000 0000  ..+..V..........
+0x7ffef9a49cf8  5230 867c 52c8 a295 f0e4 2bd1 2e56 0000  R0.|R.....+..V..
+0x7ffef9a49d08  a09d a4f9 fe7f 0000 0000 0000 0000 0000  ................
+0x7ffef9a49d18  0000 0000 0000 0000 5230 4689 4c99 02c6  ........R0F.L...
+0x7ffef9a49d28  5230 7806 839a 46c7 0000 0000 fe7f 0000  R0x...F.........
+0x7ffef9a49d38  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x7ffef9a49d48  3357 81f8 5c7f 0000 38b6 7ff8 5c7f 0000  3W..\...8...\...
+0x7ffef9a49d58  dec9 0600 0000 0000 0000 0000 0000 0000  ................
+0x7ffef9a49d68  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x7ffef9a49d78  f0e4 2bd1 2e56 0000 a09d a4f9 fe7f 0000  ..+..V..........
+0x7ffef9a49d88  1ae5 2bd1 2e56 0000 989d a4f9 fe7f 0000  ..+..V..........
+0x7ffef9a49d98  1c00 0000 0000 0000 0100 0000 0000 0000  ................
+0x7ffef9a49da8  82a7 a4f9 fe7f 0000 0000 0000 0000 0000  ................
+[0x562ed12be612]> 
+
+
+The next instruction is an unconditional jump and it just jumps to clearing the eax register. The popq instruction involves popping a value of the stack and reading it, 
+and the return instruction sets this popped value to the current instruction pointer. In this case, it shows the execution of the program has been completed. To understand 
+better about how an if statement work, you can check the corresponding C file in the same folder.
+
+			---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+if2 execution:
+
+tryhackme@ip-10-10-36-50:~/if-statement$ ls
+if1  if1.c  if2
+tryhackme@ip-10-10-36-50:~/if-statement$ r2 -d if2
+Process with PID 1464 started...
+= attach 1464 1464
+bin.baddr 0x55f4b07c0000
+Using 0x55f4b07c0000
+asm.bits 64
+ -- Insert coin to continue ...
+[0x7f0324e82090]> aaa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+[x] Analyze function calls (aac)
+[x] Analyze len bytes of instructions for references (aar)
+[x] Check for objc references
+[x] Check for vtables
+[TOFIX: aaft can't run in debugger mode.ions (aaft)
+[x] Type matching analysis for all functions (aaft)
+[x] Use -AA or aaaa to perform additional experimental analysis.
+[0x7f0324e82090]> afl
+0x55f4b07c04f0    1 42           entry0
+0x55f4b09c0fe0    1 4124         reloc.__libc_start_main
+0x55f4b07c0520    4 50   -> 40   sym.deregister_tm_clones
+0x55f4b07c0560    4 66   -> 57   sym.register_tm_clones
+0x55f4b07c05b0    5 58   -> 51   entry.fini0
+0x55f4b07c04e0    1 6            sym.imp.__cxa_finalize
+0x55f4b07c05f0    1 10           entry.init0
+0x55f4b07c06b0    1 2            sym.__libc_csu_fini
+0x55f4b07c06b4    1 9            sym._fini
+0x55f4b07c0640    4 101          sym.__libc_csu_init
+0x55f4b07c05fa    5 68           main
+0x55f4b07c04b8    3 23           sym._init
+[0x7f0324e82090]> pdf @main
+/ (fcn) main 68
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55f4b07c050d)
+|           0x55f4b07c05fa      55             pushq %rbp
+|           0x55f4b07c05fb      4889e5         movq %rsp, %rbp
+|           0x55f4b07c05fe      c745f4000000.  movl $0, var_ch
+|           0x55f4b07c0605      c745f8630000.  movl $0x63, var_8h      ; 'c' ; 99
+|           0x55f4b07c060c      c745fce80300.  movl $0x3e8, var_4h     ; 1000
+|           0x55f4b07c0613      8b45f4         movl var_ch, %eax
+|           0x55f4b07c0616      3b45f8         cmpl var_8h, %eax
+|       ,=< 0x55f4b07c0619      7d0e           jge 0x55f4b07c0629
+|       |   0x55f4b07c061b      8b45f8         movl var_8h, %eax
+|       |   0x55f4b07c061e      3b45fc         cmpl var_4h, %eax
+|      ,==< 0x55f4b07c0621      7d0d           jge 0x55f4b07c0630
+|      ||   0x55f4b07c0623      8365f864       andl $0x64, var_8h
+|     ,===< 0x55f4b07c0627      eb07           jmp 0x55f4b07c0630
+|     ||`-> 0x55f4b07c0629      8145f4b00400.  addl $0x4b0, var_ch
+|     ||    ; CODE XREF from main (0x55f4b07c0627)
+|     ``--> 0x55f4b07c0630      816dfce70300.  subl $0x3e7, var_4h
+|           0x55f4b07c0637      b800000000     movl $0, %eax
+|           0x55f4b07c063c      5d             popq %rbp
+\           0x55f4b07c063d      c3             retq
+[0x7f0324e82090]> 
+
+
+[0x7f0324e82090]> db 0x55f4b07c0619
+[0x7f0324e82090]> db 0x55f4b07c0621
+[0x7f0324e82090]> db 0x55f4b07c0627
+[0x7f0324e82090]> pdf @main
+/ (fcn) main 68
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55f4b07c050d)
+|           0x55f4b07c05fa      55             pushq %rbp
+|           0x55f4b07c05fb      4889e5         movq %rsp, %rbp
+|           0x55f4b07c05fe      c745f4000000.  movl $0, var_ch
+|           0x55f4b07c0605      c745f8630000.  movl $0x63, var_8h      ; 'c' ; 99
+|           0x55f4b07c060c      c745fce80300.  movl $0x3e8, var_4h     ; 1000
+|           0x55f4b07c0613      8b45f4         movl var_ch, %eax
+|           0x55f4b07c0616      3b45f8         cmpl var_8h, %eax
+|       ,=< 0x55f4b07c0619 b    7d0e           jge 0x55f4b07c0629
+|       |   0x55f4b07c061b      8b45f8         movl var_8h, %eax
+|       |   0x55f4b07c061e      3b45fc         cmpl var_4h, %eax
+|      ,==< 0x55f4b07c0621 b    7d0d           jge 0x55f4b07c0630
+|      ||   0x55f4b07c0623      8365f864       andl $0x64, var_8h
+|     ,===< 0x55f4b07c0627 b    eb07           jmp 0x55f4b07c0630
+|     ||`-> 0x55f4b07c0629      8145f4b00400.  addl $0x4b0, var_ch
+|     ||    ; CODE XREF from main (0x55f4b07c0627)
+|     ``--> 0x55f4b07c0630      816dfce70300.  subl $0x3e7, var_4h
+|           0x55f4b07c0637      b800000000     movl $0, %eax
+|           0x55f4b07c063c      5d             popq %rbp
+\           0x55f4b07c063d      c3             retq
+[0x7f0324e82090]> dc
+hit breakpoint at: 55f4b07c0619
+[0x55f4b07c0619]> pdf @main
+/ (fcn) main 68
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55f4b07c050d)
+|           0x55f4b07c05fa      55             pushq %rbp
+|           0x55f4b07c05fb      4889e5         movq %rsp, %rbp
+|           0x55f4b07c05fe      c745f4000000.  movl $0, var_ch
+|           0x55f4b07c0605      c745f8630000.  movl $0x63, var_8h      ; 'c' ; 99
+|           0x55f4b07c060c      c745fce80300.  movl $0x3e8, var_4h     ; 1000
+|           0x55f4b07c0613      8b45f4         movl var_ch, %eax
+|           0x55f4b07c0616      3b45f8         cmpl var_8h, %eax
+|           ;-- rip:
+|       ,=< 0x55f4b07c0619 b    7d0e           jge 0x55f4b07c0629
+|       |   0x55f4b07c061b      8b45f8         movl var_8h, %eax
+|       |   0x55f4b07c061e      3b45fc         cmpl var_4h, %eax
+|      ,==< 0x55f4b07c0621 b    7d0d           jge 0x55f4b07c0630
+|      ||   0x55f4b07c0623      8365f864       andl $0x64, var_8h
+|     ,===< 0x55f4b07c0627 b    eb07           jmp 0x55f4b07c0630
+|     ||`-> 0x55f4b07c0629      8145f4b00400.  addl $0x4b0, var_ch
+|     ||    ; CODE XREF from main (0x55f4b07c0627)
+|     ``--> 0x55f4b07c0630      816dfce70300.  subl $0x3e7, var_4h
+|           0x55f4b07c0637      b800000000     movl $0, %eax
+|           0x55f4b07c063c      5d             popq %rbp
+\           0x55f4b07c063d      c3             retq
+[0x55f4b07c0619]> 
+
+[0x55aa22b8d637]> pdf @main
+/ (fcn) main 68
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55aa22b8d50d)
+|           0x55aa22b8d5fa      55             pushq %rbp
+|           0x55aa22b8d5fb      4889e5         movq %rsp, %rbp
+|           0x55aa22b8d5fe      c745f4000000.  movl $0, var_ch
+|           0x55aa22b8d605      c745f8630000.  movl $0x63, var_8h      ; 'c' ; 99
+|           0x55aa22b8d60c      c745fce80300.  movl $0x3e8, var_4h     ; 1000
+|           0x55aa22b8d613      8b45f4         movl var_ch, %eax
+|           0x55aa22b8d616      3b45f8         cmpl var_8h, %eax
+|       ,=< 0x55aa22b8d619      7d0e           jge 0x55aa22b8d629
+|       |   0x55aa22b8d61b      8b45f8         movl var_8h, %eax
+|       |   0x55aa22b8d61e      3b45fc         cmpl var_4h, %eax
+|      ,==< 0x55aa22b8d621      7d0d           jge 0x55aa22b8d630
+|      ||   0x55aa22b8d623      8365f864       andl $0x64, var_8h
+|     ,===< 0x55aa22b8d627      eb07           jmp 0x55aa22b8d630
+|     ||`-> 0x55aa22b8d629      8145f4b00400.  addl $0x4b0, var_ch
+|     ||    ; CODE XREF from main (0x55aa22b8d627)
+|     ``--> 0x55aa22b8d630      816dfce70300.  subl $0x3e7, var_4h
+|           0x55aa22b8d637 b    b800000000     movl $0, %eax
+|           ;-- rip:
+|           0x55aa22b8d63c      5d             popq %rbp
+\           0x55aa22b8d63d      c3             retq
+[0x55aa22b8d637]> px @rbp-0x8
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x7ffd101fe408  6000 0000 0100 0000 40d6 b822 aa55 0000  `.......@..".U..
+0x7ffd101fe418  973b 9fce cf7f 0000 0100 0000 0000 0000  .;..............
+0x7ffd101fe428  f8e4 1f10 fd7f 0000 0080 0000 0100 0000  ................
+0x7ffd101fe438  fad5 b822 aa55 0000 0000 0000 0000 0000  ...".U..........
+0x7ffd101fe448  f73e d50a c2e8 f733 f0d4 b822 aa55 0000  .>.....3...".U..
+0x7ffd101fe458  f0e4 1f10 fd7f 0000 0000 0000 0000 0000  ................
+0x7ffd101fe468  0000 0000 0000 0000 f73e 156e 8c8d 5967  .........>.n..Yg
+0x7ffd101fe478  f73e cbd0 8d30 3c67 0000 0000 fd7f 0000  .>...0<g........
+0x7ffd101fe488  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x7ffd101fe498  3337 ddce cf7f 0000 3896 dbce cf7f 0000  37......8.......
+0x7ffd101fe4a8  9b27 0700 0000 0000 0000 0000 0000 0000  .'..............
+0x7ffd101fe4b8  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x7ffd101fe4c8  f0d4 b822 aa55 0000 f0e4 1f10 fd7f 0000  ...".U..........
+0x7ffd101fe4d8  1ad5 b822 aa55 0000 e8e4 1f10 fd7f 0000  ...".U..........
+0x7ffd101fe4e8  1c00 0000 0000 0000 0100 0000 0000 0000  ................
+0x7ffd101fe4f8  82f7 1f10 fd7f 0000 0000 0000 0000 0000  ................
+[0x55aa22b8d637]> ps @rbp-0x8
+
+Converting 60 from hexadecimal to decimal we get 96
+
+[0x55aa22b8d637]> px @rbp-0xc                                                                                                                                                                                                              
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF                                                                                                                                                                  
+0x7ffd101fe404  0000 0000 6000 0000 0100 0000 40d6 b822  ....`.......@.."                                                                                                                                                                  
+0x7ffd101fe414  aa55 0000 973b 9fce cf7f 0000 0100 0000  .U...;..........                                                                                                                                                                  
+0x7ffd101fe424  0000 0000 f8e4 1f10 fd7f 0000 0080 0000  ................                                                                                                                                                                  
+0x7ffd101fe434  0100 0000 fad5 b822 aa55 0000 0000 0000  .......".U......                                                                                                                                                                  
+0x7ffd101fe444  0000 0000 f73e d50a c2e8 f733 f0d4 b822  .....>.....3..."                                                                                                                                                                  
+0x7ffd101fe454  aa55 0000 f0e4 1f10 fd7f 0000 0000 0000  .U..............                                                                                                                                                                  
+0x7ffd101fe464  0000 0000 0000 0000 0000 0000 f73e 156e  .............>.n                                                                                                                                                                  
+0x7ffd101fe474  8c8d 5967 f73e cbd0 8d30 3c67 0000 0000  ..Yg.>...0<g....                                                                                                                                                                  
+0x7ffd101fe484  fd7f 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe494  0000 0000 3337 ddce cf7f 0000 3896 dbce  ....37......8...                                                                                                                                                                  
+0x7ffd101fe4a4  cf7f 0000 9b27 0700 0000 0000 0000 0000  .....'..........                                                                                                                                                                  
+0x7ffd101fe4b4  0000 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe4c4  0000 0000 f0d4 b822 aa55 0000 f0e4 1f10  .......".U......                                                                                                                                                                  
+0x7ffd101fe4d4  fd7f 0000 1ad5 b822 aa55 0000 e8e4 1f10  .......".U......                                                                                                                                                                  
+0x7ffd101fe4e4  fd7f 0000 1c00 0000 0000 0000 0100 0000  ................                                                                                                                                                                  
+0x7ffd101fe4f4  0000 0000 82f7 1f10 fd7f 0000 0000 0000  ................                                                                                                                                                                  
+[0x55aa22b8d637]> px @rbp-0x4                                                                                                                                                                                                              
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF                                                                                                                                                                  
+0x7ffd101fe40c  0100 0000 40d6 b822 aa55 0000 973b 9fce  ....@..".U...;..                                                                                                                                                                  
+0x7ffd101fe41c  cf7f 0000 0100 0000 0000 0000 f8e4 1f10  ................                                                                                                                                                                  
+0x7ffd101fe42c  fd7f 0000 0080 0000 0100 0000 fad5 b822  ..............."                                                                                                                                                                  
+0x7ffd101fe43c  aa55 0000 0000 0000 0000 0000 f73e d50a  .U...........>..                                                                                                                                                                  
+0x7ffd101fe44c  c2e8 f733 f0d4 b822 aa55 0000 f0e4 1f10  ...3...".U......                                                                                                                                                                  
+0x7ffd101fe45c  fd7f 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe46c  0000 0000 f73e 156e 8c8d 5967 f73e cbd0  .....>.n..Yg.>..                                                                                                                                                                  
+0x7ffd101fe47c  8d30 3c67 0000 0000 fd7f 0000 0000 0000  .0<g............                                                                                                                                                                  
+0x7ffd101fe48c  0000 0000 0000 0000 0000 0000 3337 ddce  ............37..                                                                                                                                                                  
+0x7ffd101fe49c  cf7f 0000 3896 dbce cf7f 0000 9b27 0700  ....8........'..                                                                                                                                                                  
+0x7ffd101fe4ac  0000 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe4bc  0000 0000 0000 0000 0000 0000 f0d4 b822  ..............."                                                                                                                                                                  
+0x7ffd101fe4cc  aa55 0000 f0e4 1f10 fd7f 0000 1ad5 b822  .U............."                                                                                                                                                                  
+0x7ffd101fe4dc  aa55 0000 e8e4 1f10 fd7f 0000 1c00 0000  .U..............                                                                                                                                                                  
+0x7ffd101fe4ec  0000 0000 0100 0000 0000 0000 82f7 1f10  ................                                                                                                                                                                  
+0x7ffd101fe4fc  fd7f 0000 0000 0000 0000 0000 88f7 1f10  ................                                                                                                                                                                  
+[0x55aa22b8d637]> px @rbp-0x8                                                                                                                                                                                                              
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF                                                                                                                                                                  
+0x7ffd101fe408  6000 0000 0100 0000 40d6 b822 aa55 0000  `.......@..".U..                                                                                                                                                                  
+0x7ffd101fe418  973b 9fce cf7f 0000 0100 0000 0000 0000  .;..............                                                                                                                                                                  
+0x7ffd101fe428  f8e4 1f10 fd7f 0000 0080 0000 0100 0000  ................                                                                                                                                                                  
+0x7ffd101fe438  fad5 b822 aa55 0000 0000 0000 0000 0000  ...".U..........                                                                                                                                                                  
+0x7ffd101fe448  f73e d50a c2e8 f733 f0d4 b822 aa55 0000  .>.....3...".U..                                                                                                                                                                  
+0x7ffd101fe458  f0e4 1f10 fd7f 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe468  0000 0000 0000 0000 f73e 156e 8c8d 5967  .........>.n..Yg                                                                                                                                                                  
+0x7ffd101fe478  f73e cbd0 8d30 3c67 0000 0000 fd7f 0000  .>...0<g........                                                                                                                                                                  
+0x7ffd101fe488  0000 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe498  3337 ddce cf7f 0000 3896 dbce cf7f 0000  37......8.......                                                                                                                                                                  
+0x7ffd101fe4a8  9b27 0700 0000 0000 0000 0000 0000 0000  .'..............                                                                                                                                                                  
+0x7ffd101fe4b8  0000 0000 0000 0000 0000 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe4c8  f0d4 b822 aa55 0000 f0e4 1f10 fd7f 0000  ...".U..........                                                                                                                                                                  
+0x7ffd101fe4d8  1ad5 b822 aa55 0000 e8e4 1f10 fd7f 0000  ...".U..........                                                                                                                                                                  
+0x7ffd101fe4e8  1c00 0000 0000 0000 0100 0000 0000 0000  ................                                                                                                                                                                  
+0x7ffd101fe4f8  82f7 1f10 fd7f 0000 0000 0000 0000 0000  ................ 
+
+
+Similarly we have : 
+
+	var_ch : 0
+	var_4h : 1
+	var_8h : 96
+
+from line 0x55aa22b8d623      8365f864       andl $0x64, var_8h we see that it used and(&) operator.
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+										LOOPS
+
+
+tryhackme@ip-10-10-36-50:~/loops$ ls
+loop1  loop1.c  loop2
+tryhackme@ip-10-10-36-50:~/loops$ cat loop1.c
+#include <stdio.h>
+
+int main(void){
+  int a = 4;
+  int b = 9;
+  int c = 10;
+  while(a < 9){
+    a = a + 2;
+  }
+return 0;
+}
+tryhackme@ip-10-10-36-50:~/loops$ r2 -d loop1
+Process with PID 1527 started...
+= attach 1527 1527
+bin.baddr 0x564993049000
+Using 0x564993049000
+asm.bits 64
+ -- If you're not satisfied by our product, we'll be happy to refund you.
+[0x7f0beb3cc090]> aaa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+[x] Analyze function calls (aac)
+[x] Analyze len bytes of instructions for references (aar)
+[x] Check for objc references
+[x] Check for vtables
+[TOFIX: aaft can't run in debugger mode.ions (aaft)
+[x] Type matching analysis for all functions (aaft)
+[x] Use -AA or aaaa to perform additional experimental analysis.
+[0x7f0beb3cc090]> afl
+0x5649930494f0    1 42           entry0
+0x564993249fe0    1 4124         reloc.__libc_start_main
+0x564993049520    4 50   -> 40   sym.deregister_tm_clones
+0x564993049560    4 66   -> 57   sym.register_tm_clones
+0x5649930495b0    5 58   -> 51   entry.fini0
+0x5649930494e0    1 6            sym.imp.__cxa_finalize
+0x5649930495f0    1 10           entry.init0
+0x5649930496a0    1 2            sym.__libc_csu_fini
+0x5649930496a4    1 9            sym._fini
+0x564993049630    4 101          sym.__libc_csu_init
+0x5649930495fa    4 44           main
+0x5649930494b8    3 23           sym._init
+[0x7f0beb3cc090]> 
+[0x7f0beb3cc090]> pdf @main
+/ (fcn) main 44
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56499304950d)
+|           0x5649930495fa      55             pushq %rbp
+|           0x5649930495fb      4889e5         movq %rsp, %rbp
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613      eb04           jmp 0x564993049619
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x7f0beb3cc090]>
+
+
+[0x7f0beb3cc090]> db 0x564993049613
+[0x7f0beb3cc090]> pdf @main
+/ (fcn) main 44
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56499304950d)
+|           0x5649930495fa      55             pushq %rbp
+|           0x5649930495fb      4889e5         movq %rsp, %rbp
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x7f0beb3cc090]> dc
+hit breakpoint at: 564993049613
+[0x564993049613]> 
+
+
+[0x564993049613]> pdf @main                                                                                                                                                                                                                
+            ;-- rax:                                                                                                                                                                                                                       
+/ (fcn) main 44                                                                                                                                                                                                                            
+|   int main (int argc, char **argv, char **envp);                                                                                                                                                                                         
+|           ; var int32_t var_ch @ rbp-0xc                                                                                                                                                                                                 
+|           ; var int32_t var_8h @ rbp-0x8                                                                                                                                                                                                 
+|           ; var int32_t var_4h @ rbp-0x4                                                                                                                                                                                                 
+|           ; DATA XREF from entry0 (0x56499304950d)                                                                                                                                                                                       
+|           0x5649930495fa      55             pushq %rbp                                                                                                                                                                                  
+|           0x5649930495fb      4889e5         movq %rsp, %rbp                                                                                                                                                                             
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch                                                                                                                                                                             
+|           0x564993049605      c745f8090000.  movl $9, var_8h                                                                                                                                                                             
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h                                                                                                                                                                           
+|           ;-- rip:                                                                                                                                                                                                                       
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619                                                                                                                                                                          
+|      .--> 0x564993049615      8345f402       addl $2, var_ch                                                                                                                                                                             
+|      :|   ; CODE XREF from main (0x564993049613)                                                                                                                                                                                         
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch                                                                                                                                                                             
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615                                                                                                                                                                          
+|           0x56499304961f      b800000000     movl $0, %eax                                                                                                                                                                               
+|           0x564993049624      5d             popq %rbp                                                                                                                                                                                   
+\           0x564993049625      c3             retq                                                                                                                                                                                        
+[0x564993049613]> ds                                                                                                                                                                                                                       
+[0x564993049613]> pdf @main                                                                                                                                                                                                                
+            ;-- rax:                                                                                                                                                                                                                       
+/ (fcn) main 44                                                                                                                                                                                                                            
+|   int main (int argc, char **argv, char **envp);                                                                                                                                                                                         
+|           ; var int32_t var_ch @ rbp-0xc                                                                                                                                                                                                 
+|           ; var int32_t var_8h @ rbp-0x8                                                                                                                                                                                                 
+|           ; var int32_t var_4h @ rbp-0x4                                                                                                                                                                                                 
+|           ; DATA XREF from entry0 (0x56499304950d)                                                                                                                                                                                       
+|           0x5649930495fa      55             pushq %rbp                                                                                                                                                                                  
+|           0x5649930495fb      4889e5         movq %rsp, %rbp                                                                                                                                                                             
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ;-- rip:
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x564993049613]> ds
+[0x564993049613]> pdf @main
+            ;-- rax:
+/ (fcn) main 44
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56499304950d)
+|           0x5649930495fa      55             pushq %rbp
+|           0x5649930495fb      4889e5         movq %rsp, %rbp
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      |    ;-- rip:
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x564993049613]> ds
+[0x564993049613]> pdf @main
+            ;-- rax:
+/ (fcn) main 44
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56499304950d)
+|           0x5649930495fa      55             pushq %rbp
+|           0x5649930495fb      4889e5         movq %rsp, %rbp
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619
+|       |   ;-- rip:
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x564993049613]> ps @ rbp-0xc
+\x04
+[0x564993049613]> ds
+[0x564993049613]> ps @ rbp-0xc
+\x06
+[0x564993049613]> pdf @main
+            ;-- rax:
+/ (fcn) main 44
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56499304950d)
+|           0x5649930495fa      55             pushq %rbp
+|           0x5649930495fb      4889e5         movq %rsp, %rbp
+|           0x5649930495fe      c745f4040000.  movl $4, var_ch
+|           0x564993049605      c745f8090000.  movl $9, var_8h
+|           0x56499304960c      c745fc0a0000.  movl $0xa, var_4h
+|       ,=< 0x564993049613 b    eb04           jmp 0x564993049619
+|      .--> 0x564993049615      8345f402       addl $2, var_ch
+|      :|   ;-- rip:
+|      :|   ; CODE XREF from main (0x564993049613)
+|      :`-> 0x564993049619      837df408       cmpl $8, var_ch
+|      `==< 0x56499304961d      7ef6           jle 0x564993049615
+|           0x56499304961f      b800000000     movl $0, %eax
+|           0x564993049624      5d             popq %rbp
+\           0x564993049625      c3             retq
+[0x564993049613]> 
+
+
+					---------------------------------------------------------------------------------------------------------------------------------------------
+
+loop2 : execution :>
+
+
+tryhackme@ip-10-10-36-50:~/loops$ r2 -d loop2
+Process with PID 1534 started...
+= attach 1534 1534
+bin.baddr 0x56398bff4000
+Using 0x56398bff4000
+asm.bits 64
+ -- Are you still there?
+[0x7f6da750c090]> aaa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+Warning: Invalid range. Use different search.in=? or anal.in=dbg.maps.x
+[x] Analyze function calls (aac)
+[x] Analyze len bytes of instructions for references (aar)
+[x] Check for objc references
+[x] Check for vtables
+[TOFIX: aaft can't run in debugger mode.ions (aaft)
+[x] Type matching analysis for all functions (aaft)
+[x] Use -AA or aaaa to perform additional experimental analysis.
+[0x7f6da750c090]> afl
+0x56398bff44f0    1 42           entry0
+0x56398c1f4fe0    1 4124         reloc.__libc_start_main
+0x56398bff4520    4 50   -> 40   sym.deregister_tm_clones
+0x56398bff4560    4 66   -> 57   sym.register_tm_clones
+0x56398bff45b0    5 58   -> 51   entry.fini0
+0x56398bff44e0    1 6            sym.imp.__cxa_finalize
+0x56398bff45f0    1 10           entry.init0
+0x56398bff46b0    1 2            sym.__libc_csu_fini
+0x56398bff46b4    1 9            sym._fini
+0x56398bff4640    4 101          sym.__libc_csu_init
+0x56398bff45fa    4 66           main
+0x56398bff44b8    3 23           sym._init
+[0x7f6da750c090]> pdf @main
+/ (fcn) main 66
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x56398bff450d)
+|           0x56398bff45fa      55             pushq %rbp
+|           0x56398bff45fb      4889e5         movq %rsp, %rbp
+|           0x56398bff45fe      c745f4140000.  movl $0x14, var_ch      ; 20
+|           0x56398bff4605      c745f8160000.  movl $0x16, var_8h      ; 22
+|           0x56398bff460c      c745fc000000.  movl $0, var_4h
+|           0x56398bff4613      c745fc040000.  movl $4, var_4h
+|       ,=< 0x56398bff461a      eb13           jmp 0x56398bff462f
+|      .--> 0x56398bff461c      8365f402       andl $2, var_ch
+|      :|   0x56398bff4620      d17df8         sarl $1, var_8h
+|      :|   0x56398bff4623      8b55fc         movl var_4h, %edx
+|      :|   0x56398bff4626      89d0           movl %edx, %eax
+|      :|   0x56398bff4628      01c0           addl %eax, %eax
+|      :|   0x56398bff462a      01d0           addl %edx, %eax
+|      :|   0x56398bff462c      8945fc         movl %eax, var_4h
+|      :|   ; CODE XREF from main (0x56398bff461a)
+|      :`-> 0x56398bff462f      837dfc63       cmpl $0x63, var_4h      ; 'c'
+|      `==< 0x56398bff4633      7ee7           jle 0x56398bff461c
+|           0x56398bff4635      b800000000     movl $0, %eax
+|           0x56398bff463a      5d             popq %rbp
+\           0x56398bff463b      c3             retq
+[0x7f6da750c090]> 
+
+[0x7f6da750c090]> dc                                                                                                                                                                                                                       
+hit breakpoint at: 56398bff462f                                                                                                                                                                                                            
+[0x56398bff462f]> pdf @main                                                                                                                                                                                                                
+            ;-- rax:                                                                                                                                                                                                                       
+/ (fcn) main 66                                                                                                                                                                                                                            
+|   int main (int argc, char **argv, char **envp);                                                                                                                                                                                         
+|           ; var int32_t var_ch @ rbp-0xc                                                                                                                                                                                                 
+|           ; var int32_t var_8h @ rbp-0x8                                                                                                                                                                                                 
+|           ; var int32_t var_4h @ rbp-0x4                                                                                                                                                                                                 
+|           ; DATA XREF from entry0 (0x56398bff450d)                                                                                                                                                                                       
+|           0x56398bff45fa      55             pushq %rbp                                                                                                                                                                                  
+|           0x56398bff45fb      4889e5         movq %rsp, %rbp                                                                                                                                                                             
+|           0x56398bff45fe      c745f4140000.  movl $0x14, var_ch      ; 20                                                                                                                                                                
+|           0x56398bff4605      c745f8160000.  movl $0x16, var_8h      ; 22                                                                                                                                                                
+|           0x56398bff460c      c745fc000000.  movl $0, var_4h                                                                                                                                                                             
+|           0x56398bff4613      c745fc040000.  movl $4, var_4h                                                                                                                                                                             
+|       ,=< 0x56398bff461a      eb13           jmp 0x56398bff462f                                                                                                                                                                          
+|      .--> 0x56398bff461c      8365f402       andl $2, var_ch                                                                                                                                                                             
+|      :|   0x56398bff4620      d17df8         sarl $1, var_8h                                                                                                                                                                             
+|      :|   0x56398bff4623      8b55fc         movl var_4h, %edx                                                                                                                                                                           
+|      :|   0x56398bff4626      89d0           movl %edx, %eax                                                                                                                                                                             
+|      :|   0x56398bff4628      01c0           addl %eax, %eax                                                                                                                                                                             
+|      :|   0x56398bff462a      01d0           addl %edx, %eax                                                                                                                                                                             
+|      :|   0x56398bff462c      8945fc         movl %eax, var_4h                                                                                                                                                                           
+|      :|   ;-- rip:                                                                                                                                                                                                                       
+|      :|   ; CODE XREF from main (0x56398bff461a)                                                                                                                                                                                         
+|      :`-> 0x56398bff462f b    837dfc63       cmpl $0x63, var_4h      ; 'c'                                                                                                                                                               
+|      `==< 0x56398bff4633      7ee7           jle 0x56398bff461c                                                                                                                                                                          
+|           0x56398bff4635      b800000000     movl $0, %eax                                                                                                                                                                               
+|           0x56398bff463a      5d             popq %rbp                                                                                                                                                                                   
+\           0x56398bff463b      c3             retq                                                                                                                                                                                        
+[0x56398bff462f]> dc                                                                                                                                                                                                                       
+hit breakpoint at: 56398bff462f                                                                                                                                                                                                            
+[0x56398bff462f]> ps @ rbp-0xc                                                                                                                                                                                                             
+                                                                                                                                                                                                                                           
+[0x56398bff462f]> ps @ rbp-0x8                                                                                                                                                                                                             
+\x0b                                                                                                                                                                                                                                       
+[0x56398bff462f]> dc                                                                                                                                                                                                                       
+hit breakpoint at: 56398bff462f                                                                                                                                                                                                            
+[0x56398bff462f]> ps @ rbp-0x8                                                                                                                                                                                                             
+\x05                            
+
+[0x7f5cd8be2090]> pdf @main
+/ (fcn) main 66
+|   int main (int argc, char **argv, char **envp);
+|           ; var int32_t var_ch @ rbp-0xc
+|           ; var int32_t var_8h @ rbp-0x8
+|           ; var int32_t var_4h @ rbp-0x4
+|           ; DATA XREF from entry0 (0x55c06185c50d)
+|           0x55c06185c5fa      55             pushq %rbp
+|           0x55c06185c5fb      4889e5         movq %rsp, %rbp
+|           0x55c06185c5fe      c745f4140000.  movl $0x14, var_ch      ; 20
+|           0x55c06185c605      c745f8160000.  movl $0x16, var_8h      ; 22
+|           0x55c06185c60c      c745fc000000.  movl $0, var_4h
+|           0x55c06185c613      c745fc040000.  movl $4, var_4h
+|       ,=< 0x55c06185c61a      eb13           jmp 0x55c06185c62f
+|      .--> 0x55c06185c61c      8365f402       andl $2, var_ch
+|      :|   0x55c06185c620      d17df8         sarl $1, var_8h
+|      :|   0x55c06185c623      8b55fc         movl var_4h, %edx
+|      :|   0x55c06185c626      89d0           movl %edx, %eax
+|      :|   0x55c06185c628      01c0           addl %eax, %eax
+|      :|   0x55c06185c62a      01d0           addl %edx, %eax
+|      :|   0x55c06185c62c      8945fc         movl %eax, var_4h
+|      :|   ; CODE XREF from main (0x55c06185c61a)
+|      :`-> 0x55c06185c62f      837dfc63       cmpl $0x63, var_4h      ; 'c'
+|      `==< 0x55c06185c633      7ee7           jle 0x55c06185c61c
+|           0x55c06185c635      b800000000     movl $0, %eax
+|           0x55c06185c63a      5d             popq %rbp
+\           0x55c06185c63b      c3             retq
+[0x7f5cd8be2090]> db 0x55c06185c635
+[0x7f5cd8be2090]> dc
+hit breakpoint at: 55c06185c635
+[0x55c06185c635]> ps @ rbp-0xc
+
+[0x55c06185c635]> ps @ rbp-0x8
+\x02
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

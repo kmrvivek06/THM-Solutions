@@ -1,0 +1,44 @@
+IP : 10.10.211.222
+
+Open Ports : 22,80
+
+80:
+
+Apache Default page : found a name in source : Jessie
+
+Hidden directory : /sitemap
+
+80/sitemap:
+
+Unapp : some kind of template for websites:
+
+Scanning the /sitemap we get a .ssh directory.
+
+Lets get there : we find a key
+
+Lets use it to ssh:
+
+we are in.
+
+use find / -type f -name '*user*' 2> /dev/null for finding users flag : Documents directory
+
+Navigate and get the flag : 057c67131c3d5e42dd5cd3075b198ff6
+
+Privesc :
+
+We can use wget as root without password.
+
+Lets get /etc/passwd file and modify it to contain our generated password:
+	 openssl passwd -1 -salt root password
+
+	Password to exchane :x: with : $1$root$1fvaXuILgb4rdRlHdQ80N/
+
+Lets change and upload the file with wget.
+
+run su and provide password as : password
+
+We are root : get the flag : b1b968b37519ad1daa6408188649263d
+
+!!!
+
+

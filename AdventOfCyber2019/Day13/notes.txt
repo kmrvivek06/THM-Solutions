@@ -1,0 +1,40 @@
+IP : 10.10.63.26
+
+Open Ports : 80,3389
+
+It is a Windows machine:
+
+Lets check the website.
+
+We found a hidden directory : /retro
+
+Visiting : it has some old games and descriptions.
+
+We found a Wordpress login.
+
+We also found a comment by Wade in Ready Player One feed : Leaving myself a note here just in case I forget how to spell it: parzival
+
+This looks like a password.
+
+Using this we are able to login to wordpress admin panel : wade:parzival
+
+There is nothing here :
+
+We also have RDP running on 3389, lets check that
+
+We are in, this indeed was correct password for the machine.
+
+We have user.txt on desktop : THM{HACK_PLAYER_ONE}
+
+We also see hhupd.exe and A CVE in history : CVE-2019-1388
+
+Run the exe as admin > Show more Details > Show more info about publisher's certificate : open in any browser.
+
+Try saving the wbpage : when windows eplorer opens : to ro system32 and run cmd.
+
+
+Here we are nt-authority system.
+
+Navigate to Administrator Desktop for flag. : THM{COIN_OPERATED_EXPLOITATION}
+
+!!!

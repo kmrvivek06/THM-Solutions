@@ -1,0 +1,15 @@
+IP : 10.10.199.116
+
+ID for audit : ODIzODI5MTNiYmYw
+
+Add the id to the parameter 10.10.199.116?id=ODIzODI5MTNiYmYw
+
+Copy php-reverse-shell to current directoy
+
+Try uploading : we get error
+
+Rename it to shell.jpg.php : it is uploaded.
+
+Go to /uploads directory and activate the reverse shell
+
+Go to the /var/www directory to get the flag : THM{MGU3Y2UyMGUwNjExYTY4NTAxOWJhMzhh}

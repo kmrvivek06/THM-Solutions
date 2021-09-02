@@ -1,0 +1,19 @@
+IP : 10.10.121.100
+
+Open Ports : 22,631
+
+
+Printer Testing cheat sheet :
+http://hacking-printers.net/wiki/index.php/Printer_Security_Testing_Cheat_Sheet
+
+Aceess the service in browser directly at  : 10.10.121.100
+
+Go to printers tab : 
+
+Found printer : Fox_Printer : location - Skidy's basement
+
+Select the printer and trigger a test page print.
+
+Test page size : 1k
+
+!!!

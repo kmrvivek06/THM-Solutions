@@ -1,0 +1,12 @@
+ Analyse : aaa
+Find entry points : afl
+
+Check main function : pdf @ main
+Check other functions : pdf @ [function_name]
+Check memory dump : px @ [memory_pointer]
+	example : px @ eax,  px @ ebp-0x4
+
+Get into Graphical mode : VV @ [function name]
+Exit Graphical mode : q
+
+

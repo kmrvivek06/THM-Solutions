@@ -1,0 +1,12 @@
+IP : 10.10.240.22
+
+Port to enum : 3000
+
+Found Secret Directory : /sysadmin
+
+Check the source : search on github directory:
+
+username : admin
+password : defaultpass
+
+!!!

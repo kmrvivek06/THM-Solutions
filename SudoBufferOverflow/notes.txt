@@ -1,0 +1,14 @@
+IP : 10.10.245.222
+
+creds : tryhackme:truhackme
+
+SSH Port : 4444
+
+
+SSH and run the exploit.
+
+We got a root shell.
+
+Navigate to /root and get the flag : THM{buff3r_0v3rfl0w_rul3s}
+
+!!!

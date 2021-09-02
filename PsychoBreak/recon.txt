@@ -1,0 +1,133 @@
+IP : 10.10.149.239
+Open Ports : 
+	21 : ProFTPD 1.3.5a,
+	22 : SSH OpenSSH 7.2p2,
+	80 : Web
+
+Lets check that out:
+	Anonymous login not allowed on ftp.
+	No user now for SSH
+
+Lets enumerate web:
+	We get challenge homepage when visited to port 80 with a message for us to help sebastian's team for the challenges ahead.
+	We find a new room -> /sadistRoom
+	Also we found a map.html which gives 404.
+	For now lets move to /sadistRoom
+	We found a message saying sebastian found a key to the locker room.
+	Lets get the key : Key to locker Room => 532219a04ab7a02b56faafbec1a4c1ea
+	As soon we get the key we get a message saying escape to locker room before its too late, we have to be fast and click the escape button
+	We also found an image key.png in the page source, lets get that for now because it has key in name so it is suspicious
+	Once we click escape room, it asks for the key. Lets use the kay we found to escape.
+	We are now in Locker room, it has a message to decode a string to get a key for accessing the map.
+	Encoded string : Tizmg_nv_zxxvhh_gl_gsv_nzk_kovzhv
+			We can also use the link to do so : https://www.guballa.de/vigenere-solver
+	Encoding Cipher : Atbash Cipher (found by applying different ciphers from CyberChef)
+	Decoded String : Grant_me_access_to_the_map_please
+	Lets use this to get to the map.
+	We got an input field asking for the key : enter the key and press enter.
+	We found 4 rooms, which have 2 new rooms for us.
+		1. Sadist Room
+		2. Locker Room
+		3. Safe Heaven
+		4. The Abandoned Room
+	Lets visit the 3rd room : Safe Heaven.
+	We foud a message that we are in Sebastians safe house, we are out of trouble.
+	We also found some images, one image in the galary has a key symbol on it. Lets get that as well.
+	We also get a message to search through the room lets use gobuster. We use directoy-list-2.3-medium.txt.
+	We found a hidded directory : /keeper
+	Lets visit this.
+	We get a button saying escape from keeper, also we find a wili kink for the same.
+	Lets use that button.
+	We get an image, download it as image.jpg.
+	Use the google images reverse search with the image : St. Augustine Lighthouse
+	We enter that in the input box and press enter.
+	We are given with keepers key : 48ee41458eb0b43bf82b986cecf3af01
+	Nothing more to move foreward here.
+	Lets go to another room from the maps.
+	While entering the Abandoned room it asks for keeper's key, lets enter the key we just found.
+	We got into The Abandoned room. It has a button go further. Nothing more in the source.
+	Lets go further ...
+	Again it is a time based challenge!
+	While seeing the source we get a message as there is something called shell on current page, that will help.
+	It looks like it is a gwt query parameter, lets enumerate it.
+	Using ?shell=ls we got the listing of the pages in that dir. we found a directory : assets
+	Lets check it out
+	Nothing here, lets check other directories.
+	looks like we can only go one directory back.
+	We found three entries :
+		680e89809965ec41e64dc7e447f175ab, be8bc662d1e36575a52da40beba38275, index.php
+	The first entry looks like a directory as the url we are in
+		http://10.10.149.239/abandonedRoom/be8bc662d1e36575a52da40beba38275/herecomeslara.php?shell=ls%20..
+	Lets try to visit from browser
+		We get can move to that directory :
+		We found two entries:
+			helpme.zip
+			you_made_it.txt
+	Lets get those files.
+	The text file just contains a message, nothing important.
+	We get two files once we unzip the helpme.zip file.
+		1. helpme.txt
+		2. Table.jpg	
+	Lets check the text file:
+		There is a message from Joseph, saying Ruvik locked him in cell and key is on the Table.
+	Lets check Table.jpg:
+		We cannot open the file because it contains some errors, lets enumerate.
+		We cna see key.wav in strings of this file.
+		Lets check file type.
+		We see that it is a zip archive desguised as jpg
+		Lets extract it.
+		We got two more files:
+			1. Joseph_Oda.jpg
+			2. key.wav	
+	Lets check the files.
+		The wav file looks like it is some sound code.
+		It is a morse code indeed.
+		Lets crack it : SHOWME
+
+	Lets use this as a passphrse for Josephs image.
+	We found his credentials for ftp.
+
+	Lets use this to login to FTP
+	We found two more files:
+		program and random.dic
+	Lets check the progarm:
+		It needs and input text parameter, lets loop through the random dict.
+		It dosent work, the prgram is unable to get values from file
+		Lets move the values to txt file.
+			strings random.dic > inputs.txt
+		Lets loop through it:
+			while read LINE; do ./program "$LINE"; done < inputs.txt
+		
+		We found a valid usename and encoded message :
+		kidman => Correct
+		Well Done !!!
+		Decode This => 55 444 3 6 2 66 7777 7 2 7777 7777 9 666 777 3 444 7777 7777 666 7777 8 777 2 66 4 33
+		
+		This looks like multitap phone cipher lets decode it.
+		55 444 3 6 2 66 7777 7 2 7777 7777 9 666 777 3 444 7777 7777 666 7777 8 777 2 66 4 33
+		K   I  D M A N   S   P A  S    S   W  O   R  D  I   S    S    O   S   T  R  A  N G E
+		We got the password : KIDMANSPASSWORDISSOSTRANGE
+
+	Lets SSH:
+		We foud users flag : 4C72A4EF8E6FED69C72B4D58431C4254
+
+	PrivEsc:
+		Sudo : Nothing is available.
+		Cron Jobs : */2 * * * * root python3 /var/.the_eye_of_ruvik.py
+		This runs everu two minutes.
+		Lets check this out:
+		It echo a file into kidmans home directory with some text.
+		Lets use it to cat /root/root.txt
+			subprocess.call("cat /root/root.txt > /home/kidman/.the_eye.txt",shell=True)
+		Wait for two minutes jor cron job to run and then cat out .the_eye.txt
+		We got roots flag : BA33BDF5B8A3BFC431322F7D13F3361E !!!
+
+	For Bonus :
+		Delete ruviks account :
+		subprocess.call("userdel ruvik",shell=True)
+		Wait for two minutes for the job to run,
+		Verify using /etc/passwd file, the account will be deleted.
+
+	Completed !!!
+
+

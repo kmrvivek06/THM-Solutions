@@ -1,0 +1,30 @@
+IP : 10.10.197.135
+
+Open Ports :
+	21 : FTP - anonymous login allowed
+	22 : SSH
+	80 : WEB
+
+Lets check out the web:
+	Nothing much here
+
+Lets check the ftp:
+	We can get anonymous access
+	We got two files, lock.txt and tasks.txt
+	The file tasks.txt was creted by user : lin
+	The file locks.txt contains some passwords, lets try to bruteforce ssh.
+	We found the ssh password :
+		[22][ssh] host: 10.10.197.135   login: lin   password: RedDr4gonSynd1cat3
+
+Lets SSH :
+	We land up in lin's desktop folder.
+	We got user.txt : THM{CR1M3_SyNd1C4T3}
+
+Privesc:
+	Doing sudo -l we foud that we can run tar as root.
+	Lets check GTFOBins
+	running : sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh
+	We got a root shell, navigate to /root directory.
+	We found the root flag : THM{80UN7Y_h4cK3r}
+
+!!!

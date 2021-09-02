@@ -1,0 +1,16 @@
+IP : 10.10.102.201
+
+Go to website
+Register and check for cookie value
+
+cookie details:
+	name : auth
+	value : 7b22636f6d70616e79223a22546865204265737420466573746976616c20436f6d70616e79222c2022757365726e616d65223a227465737475736572227d
+
+	decoded value : {"company":"The Best Festival Company", "username":"testuser"}
+
+Edit the username : santa
+	new value : {"company":"The Best Festival Company", "username":"santa"}
+	encoded value : 7b22636f6d70616e79223a22546865204265737420466573746976616c20436f6d70616e79222c2022757365726e616d65223a2273616e7461227d
+
+Reactivate the lines and get the flag : THM{MjY0Yzg5NTJmY2Q1NzM1NjBmZWFhYmQy}

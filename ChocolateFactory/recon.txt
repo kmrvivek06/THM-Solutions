@@ -1,0 +1,80 @@
+IP -> 10.10.139.121
+
+Open Ports ->
+	21 vsftpd 3.0.3 : Anonymous login allowed
+	22 Open SSH 7.6p1
+	80
+	106
+	109
+	110
+	111
+	113
+	119
+	125
+
+Also we found a hint :
+	113/tcp open  ident?
+|_auth-owners: ERROR: Script execution failed (use -d to debug)
+| fingerprint-strings: 
+|   DNSVersionBindReqTCP, GenericLines, NULL, SIPOptions: 
+|_    http://localhost/key_rev_key <- You will find the key here!!!
+
+
+It downloads a file.
+
+The file contains a key :
+
+	congratulations you have found the key:   b'-VkgXhFf6sAEcAwrC6YR-SZbiuSb8ABXeQuvhcGSQzY='
+
+Since it is base64 lets decode:
+	Nothing useful
+
+Lets checkout FTP:
+	Anonymous login successful
+	File found : gum_room.jpg
+	
+Most probably it is a stego file. Lets extract using seghide:
+	We found a base64 encoded string in b64.txt file
+
+After decoding we found that it is shadow file containg password hashes.
+
+We found a user charlie and his hash which is SHA512, lets check it out john.
+
+We found the password as cn7824
+
+Lets SSH :
+	This is not the password for SSH
+
+Lets try weblogin:
+	We are in.
+
+Tried uploading php shell, dosent work.
+
+Lets try a python shell from pentestmonkey
+
+we are in 
+
+Spawn a real shell :
+
+	python -c'import pty; pty.spawn("/bin/bash")'
+
+List directory:
+	two files found teleport and teleport.pub
+
+Lets check that out:
+	teleport -> rsa private key
+Lets copy it down.
+
+We are in with charlie's account.
+
+got user flag : flag{cd5509042371b34e4826e4838b522d2e}
+
+Lets check sudo : We can run vi
+
+Check GTFOBINS
+
+we found an exploit
+
+We got root shell:
+
+	Use the key found earlier to get the root flag!!!

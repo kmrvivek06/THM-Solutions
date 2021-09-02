@@ -1,0 +1,28 @@
+IP : 10.10.108.136
+
+Open Ports : 22,80,111
+
+Nothing on website:
+
+Hint towards struts in source.
+
+Fire msfconsole, search for struts, use exploit multi/http/struts2_content_type_ognl
+
+Set options and run
+
+Got a shell
+
+Navigate to /home/sant : we got ssh credentials : santa:rudolphrednosedreindeer
+
+find / 2>/dev/null | grep Flag        
+/usr/local/tomcat/webapps/ROOT/ThisIsFlag1.txt
+
+Cat the flag : THM{3ad96bb13ec963a5ca4cb99302b37e12}
+
+Checking ls -la on / we found that we are in a docker.
+
+Since we have santa's credentials lets login through ssh:
+
+We can use sed for getting text based on line numbers : sed 'line-number!d' filename
+
+!!!

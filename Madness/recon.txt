@@ -1,0 +1,47 @@
+IP : 10.10.219.22
+
+Open Ports : 22, 80
+
+80 -> default web page
+We got an error in getting the image as it contains some errors, lets check that out.
+
+We didnt get a jpg header, there is something wrong with the file.
+
+we found that the file has a header of png with extention .jpg
+
+Lets see how we can edit that.
+replace the first bit with the first bit on an jpg file using hexedit.
+
+The file is now openable, We found a hidden directory : /th1s_1s_h1dd3n
+
+Visiting that we got a message to guess a secret, in source we found that it is between 0-99 lets check that out.
+Lets check that in burp.
+	Assuming it has emphasis on secret lets use that as a query paramter.. It works,
+	So we have a query parameter, lets take this to intruder in burp.
+
+	We found the secret number as 73 : we got something looks like a password : y2RPJ4QaPF!B 
+
+It might have to do something with stego:
+Lets check that with thm.jpg we downloaded earlier : 
+	We got a username : wbxre
+	It looks like it is ciphered:
+	Lets check it , indeed its a rot 13 cipher, from the hint : actual username : joker
+
+Since we dont have the password, we still cant SSH
+	We have another image at the challenge home page, on THM lets check that out.
+	Yes! this was indeed a stego image we extracted password.txt from it.
+	We found the password : *axA&GF8dP
+
+Lets try SSH:
+	We are in, lets enumerate and get the flags.
+	We found the user flag!!
+
+	We can not use sudo..
+
+	Lets use linpeas.sh for further enumeration:
+		We found a potential SUID PE vector named : /bin/screen-4.5.0
+		Lets google it out.
+			We found an exploit : https://www.exploit-db.com/exploits/41154
+			Lets move to /tmp diectory and use it.(use nano to craete exploit.sh and copy the contents)
+			Make the file executable and execute.
+			We dropped int a root shell, lets get the root flag!!!

@@ -1,0 +1,32 @@
+Search for the files :
+
+[new-user@ip-10-10-231-108 ~]$ find / -type f \( -name 8V2L -o -name bny0 -o -name c4ZX -o -name D8B3 -o -name FHl1 -o -name oiMO -o -name PFbd -o -name rmfx -o -name SRSq -o -name uqyw -o -name v2Vb -o -name X1Uy \) 2>> /dev/null
+/mnt/D8B3
+/mnt/c4ZX
+/var/FHl1
+/var/log/uqyw
+/opt/oiMO
+/opt/PFbD
+/media/rmfX
+/etc/8V2L
+/etc/ssh/SRSq
+/home/v2Vb
+/X1Uy
+
+Files owned by best-group : D8B3 v2Vb
+
+File containing 230 lines : wc -l [file-name]
+	All files have 209 lenght
+	We could not find only one file : bny0
+File with ip address : oiMO
+
+File with sh1 hash 9d54da7584015647ba052173b84d45e8007eba94 : /mnt/c4ZX
+
+File owner with ID 502:
+	All users : ec2-user  newer-user  new-user
+	ID new_user : 501
+	ID newewr-user : 502
+	ID ec2-user : 500
+
+	File belonging to newer-user : X1Uy
+Executable File : 8V2L

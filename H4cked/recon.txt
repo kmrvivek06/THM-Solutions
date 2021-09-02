@@ -1,0 +1,61 @@
+Forensics : Determine What Happened
+
+Download and open the pcapng file :
+
+We can see that FTP was bruteforced.
+
+Username : jenny
+Password : password123
+
+Tool used created by Van Hauser : Hydra
+
+Following tcp stream after success :
+
+We get current dir : /var/www/html
+
+shell uploaded by attacker : shell.php
+
+Filtering-out ftp-data protocol : file downloaded from : http://pentestmonkey.net/tools/php-reverse-shell
+
+The attacker then changed shell permission to 777
+
+The attacker then executed the shell via firefox.
+
+After getting the shell attacker executed : 
+
+	whoami
+	ls -la
+	python3 -c 'import pty; pty.spawn("/bin/bash")'
+	su jenny
+		Password: password123
+	sudo -l
+		User jenny may run the following commands on wir3:
+		 (ALL : ALL) ALL
+
+Finally for root shell : jenny@wir3:/$ sudo su
+
+Then he downloaded : https://github.com/f0rb1dd3n/Reptile.git
+
+his can be used to create a stealthy backdoor(Rootkit) which is very hard to detect.
+
+
+
+
+Get Back In: IP : 10.10.158.188
+
+Lets use hydra to bruteforce ftp : user : jenny
+
+We found the password : 987654321
+
+Upload a new php shell and change mode to 777
+Trigger the reverse shell and we will recive it with nc.
+
+spawn a python bash shell
+switch user to jenny
+check sudo -l
+run sudo su
+We are root!
+
+Navigate to /root/Reptile and cat flag.txt : ebcefd66ca4b559d17b440b6e67fd0fd
+
+!!!

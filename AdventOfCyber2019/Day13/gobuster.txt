@@ -1,0 +1,16 @@
+===============================================================
+Gobuster v3.0.1
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
+===============================================================
+[+] Url:            http://10.10.63.26/retro
+[+] Threads:        20
+[+] Wordlist:       /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+[+] Status codes:   200,204,301,302,307,401,403
+[+] User Agent:     gobuster/3.0.1
+[+] Timeout:        10s
+===============================================================
+2021/03/17 12:22:11 Starting gobuster
+===============================================================
+/wp-content (Status: 301)
+/wp-includes (Status: 301)
+/wp-admin (Status: 301)

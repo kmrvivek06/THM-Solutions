@@ -1,0 +1,6 @@
+IP on packet no. 998 : 63.32.89.195
+Follow the TCP stream for rest : 
+
+	Item in list : ps4
+	
+Save the hash and crack using john : sha512crypt : rainbow

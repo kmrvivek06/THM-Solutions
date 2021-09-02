@@ -1,0 +1,134 @@
+┌──(kali㉿kali)-[~/TryHackMe/Radare2/z]                                                                                                                                                                                                    
+└─$ r2 -d the_final_exam                                                                                                                                                                                                                   
+Process with PID 4424 started...                                                                                                                                                                                                           
+= attach 4424 4424                                                                                                                                                                                                                         
+bin.baddr 0x557a66582000                                                                                                                                                                                                                   
+Using 0x557a66582000                                                                                                                                                                                                                       
+asm.bits 64                                                                                                                                                                                                                                
+ -- TIRED OF WAITING                                                                                                                                                                                                                       
+[0x7f799118d090]> aaa                                                                                                                                                                                                                      
+[x] Analyze all flags starting with sym. and entry0 (aa)                                                                                                                                                                                   
+[x] Analyze function calls (aac)                                                                                                                                                                                                           
+[x] Analyze len bytes of instructions for references (aar)                                                                                                                                                                                 
+[x] Check for vtables                                                                                                                                                                                                                      
+[TOFIX: aaft can't run in debugger mode.ions (aaft)                                                                                                                                                                                        
+[x] Type matching analysis for all functions (aaft)                                                                                                                                                                                        
+[x] Propagate noreturn information                                                                                                                                                                                                         
+[x] Use -AA or aaaa to perform additional experimental analysis.                                                                                                                                                                           
+[0x7f799118d090]> afl                                                                                                                                                                                                                      
+0x557a665826a0    1 42           entry0                                                                                                                                                                                                    
+0x557a66782fd8    1 40           reloc.__libc_start_main                                                                                                                                                                                   
+0x557a665826d0    4 50   -> 44   sym.deregister_tm_clones                                                                                                                                                                                  
+0x557a66582710    4 66   -> 57   sym.register_tm_clones                                                                                                                                                                                    
+0x557a66582760    5 50           sym.__do_global_dtors_aux                                                                                                                                                                                 
+0x557a66582690    1 6            sym.imp.__cxa_finalize                                                                                                                                                                                    
+0x557a665827a0    4 48   -> 42   entry.init0                                                                                                                                                                                               
+0x557a66582620    3 23           sym._init                                                                                                                                                                                                 
+0x557a66582900    1 1            sym.__libc_csu_fini                                                                                                                                                                                       
+0x557a66582904    1 9            sym._fini                                                                                                                                                                                                 
+0x557a665828a0    4 93           sym.__libc_csu_init                                                                                                                                                                                       
+0x557a66582835    3 102          main                                                                                                                                                                                                      
+0x557a66582660    1 6            sym.imp.fgets                                                                                                                                                                                             
+0x557a665827d0    4 101          sym.get_password                                                                                                                                                                                          
+0x557a66582670    1 6            sym.imp.strcmp                                                                                                                                                                                            
+0x557a66582650    1 6            sym.imp.printf                                                                                                                                                                                            
+0x557a66582000    6 292  -> 318  map._home_kali_TryHackMe_Radare2_z_the_final_exam.r_x                                                                                                                                                     
+0x557a66582680    1 6            sym.imp.malloc
+[0x7f799118d090]> pdf @ sym.get_password                                                                                                                                                                                                   
+            ; CALL XREF from main @ 0x557a6658285c                                                                                                                                                                                         
+┌ 101: sym.get_password (int64_t arg1);                                                                                                                                                                                                    
+│           ; var int64_t var_28h @ rbp-0x28                                                                                                                                                                                               
+│           ; var int64_t var_15h @ rbp-0x15                                                                                                                                                                                               
+│           ; var int64_t var_14h @ rbp-0x14                                                                                                                                                                                               
+│           ; var int64_t var_10h @ rbp-0x10                                                                                                                                                                                               
+│           ; var int64_t var_4h @ rbp-0x4                                                                                                                                                                                                 
+│           ; arg int64_t arg1 @ rdi                                                                                                                                                                                                       
+│           0x557a665827d0      55             push rbp                                                                                                                                                                                    
+│           0x557a665827d1      4889e5         mov rbp, rsp                                                                                                                                                                                
+│           0x557a665827d4      4883ec30       sub rsp, 0x30                                                                                                                                                                               
+│           0x557a665827d8      48897dd8       mov qword [var_28h], rdi ; arg1                                                                                                                                                             
+│           0x557a665827dc      bf09000000     mov edi, 9                                                                                                                                                                                  
+│           0x557a665827e1      e89afeffff     call sym.imp.malloc     ;  void *malloc(size_t size)
+│           0x557a665827e6      488945f0       mov qword [var_10h], rax
+│           0x557a665827ea      c745fc000000.  mov dword [var_4h], 0
+│       ┌─< 0x557a665827f1      eb36           jmp 0x557a66582829
+│      ┌──> 0x557a665827f3      8b45fc         mov eax, dword [var_4h]
+│      ╎│   0x557a665827f6      4863d0         movsxd rdx, eax
+│      ╎│   0x557a665827f9      488b45d8       mov rax, qword [var_28h]
+│      ╎│   0x557a665827fd      4801d0         add rax, rdx
+│      ╎│   0x557a66582800      0fb600         movzx eax, byte [rax]
+│      ╎│   0x557a66582803      0fbec0         movsx eax, al
+│      ╎│   0x557a66582806      83c00a         add eax, 0xa
+│      ╎│   0x557a66582809      8945ec         mov dword [var_14h], eax
+│      ╎│   0x557a6658280c      8b45ec         mov eax, dword [var_14h]
+│      ╎│   0x557a6658280f      8845eb         mov byte [var_15h], al
+│      ╎│   0x557a66582812      8b45fc         mov eax, dword [var_4h]
+│      ╎│   0x557a66582815      4863d0         movsxd rdx, eax
+│      ╎│   0x557a66582818      488b45f0       mov rax, qword [var_10h]
+│      ╎│   0x557a6658281c      4801c2         add rdx, rax
+│      ╎│   0x557a6658281f      0fb645eb       movzx eax, byte [var_15h]
+│      ╎│   0x557a66582823      8802           mov byte [rdx], al
+│      ╎│   0x557a66582825      8345fc01       add dword [var_4h], 1
+│      ╎│   ; CODE XREF from sym.get_password @ 0x557a665827f1
+│      ╎└─> 0x557a66582829      837dfc07       cmp dword [var_4h], 7
+│      └──< 0x557a6658282d      7ec4           jle 0x557a665827f3
+│           0x557a6658282f      488b45f0       mov rax, qword [var_10h]
+│           0x557a66582833      c9             leave
+└           0x557a66582834      c3             ret
+[0x7f799118d090]> pdf @ main
+            ; DATA XREF from entry0 @ 0x557a665826bd
+┌ 102: int main (int argc, char **argv, char **envp);
+│           ; var int64_t var_11h @ rbp-0x11
+│           ; var int64_t var_8h @ rbp-0x8
+│           0x557a66582835      55             push rbp
+│           0x557a66582836      4889e5         mov rbp, rsp
+│           0x557a66582839      4883ec20       sub rsp, 0x20
+│           0x557a6658283d      488b150c0820.  mov rdx, qword [reloc.stdin] ; [0x557a66783050:8]=0
+│           0x557a66582844      488d45ef       lea rax, [var_11h]
+│           0x557a66582848      be09000000     mov esi, 9
+│           0x557a6658284d      4889c7         mov rdi, rax
+│           0x557a66582850      e80bfeffff     call sym.imp.fgets      ; char *fgets(char *s, int size, FILE *stream)
+│           0x557a66582855      488d45ef       lea rax, [var_11h]
+│           0x557a66582859      4889c7         mov rdi, rax
+│           0x557a6658285c      e86fffffff     call sym.get_password
+│           0x557a66582861      488945f8       mov qword [var_8h], rax
+│           0x557a66582865      488b45f8       mov rax, qword [var_8h]
+│           0x557a66582869      488d35a40000.  lea rsi, str.youdidit   ; 0x557a66582914 ; "youdidit"
+│           0x557a66582870      4889c7         mov rdi, rax
+│           0x557a66582873      e8f8fdffff     call sym.imp.strcmp     ; int strcmp(const char *s1, const char *s2)
+│           0x557a66582878      85c0           test eax, eax
+│       ┌─< 0x557a6658287a      7518           jne 0x557a66582894
+│       │   0x557a6658287c      488d359a0000.  lea rsi, str.You_win_   ; 0x557a6658291d ; "You win!"
+│       │   0x557a66582883      488d3d9c0000.  lea rdi, [0x557a66582926] ; "%s"
+│       │   0x557a6658288a      b800000000     mov eax, 0
+│       │   0x557a6658288f      e8bcfdffff     call sym.imp.printf     ; int printf(const char *format)
+│       └─> 0x557a66582894      b800000000     mov eax, 0
+│           0x557a66582899      c9             leave
+└           0x557a6658289a      c3             ret
+[0x7f799118d090]> db 0x557a66582873
+[0x7f799118d090]> dc
+aaaaaaa
+hit breakpoint at: 0x557a66582873
+[0x557a66582873]> px @rdi
+- offset -       0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0123456789ABCDEF
+0x557a66de46b0  6b6b 6b6b 6b6b 6b14 0000 0000 0000 0000  kkkkkkk.........
+0x557a66de46c0  0000 0000 0000 0000 4109 0200 0000 0000  ........A.......
+0x557a66de46d0  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de46e0  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de46f0  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4700  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4710  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4720  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4730  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4740  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4750  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4760  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4770  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4780  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de4790  0000 0000 0000 0000 0000 0000 0000 0000  ................
+0x557a66de47a0  0000 0000 0000 0000 0000 0000 0000 0000  ................
+[0x557a66582873]> 
+
+So the get_password is incrementing the ascii caracter by 10 and final string is being compared to "youdidit"
+
+so decrement 10 caracters from "youdidit" we get : oekZ_Z_j

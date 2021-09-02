@@ -1,0 +1,34 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-03 10:41 EST
+Nmap scan report for 10.10.130.37
+Host is up (0.21s latency).
+Not shown: 996 filtered ports
+PORT     STATE SERVICE       VERSION
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: TBFC-WEB-01
+|   NetBIOS_Domain_Name: TBFC-WEB-01
+|   NetBIOS_Computer_Name: TBFC-WEB-01
+|   DNS_Domain_Name: tbfc-web-01
+|   DNS_Computer_Name: tbfc-web-01
+|   Product_Version: 10.0.17763
+|_  System_Time: 2021-03-03T15:41:34+00:00
+| ssl-cert: Subject: commonName=tbfc-web-01
+| Not valid before: 2020-12-11T21:55:21
+|_Not valid after:  2021-06-12T21:55:21
+|_ssl-date: 2021-03-03T15:41:36+00:00; -1s from scanner time.
+5357/tcp open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+|_http-server-header: Microsoft-HTTPAPI/2.0
+|_http-title: Service Unavailable
+8009/tcp open  ajp13         Apache Jserv (Protocol v1.3)
+| ajp-methods: 
+|_  Supported methods: GET HEAD POST OPTIONS
+8080/tcp open  http          Apache Tomcat 9.0.17
+|_http-favicon: Apache Tomcat
+|_http-title: Apache Tomcat/9.0.17
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_clock-skew: mean: -1s, deviation: 0s, median: -1s
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 37.93 seconds

@@ -1,0 +1,29 @@
+IP : 10.10.231.35
+Open Ports : 4567 : SSH
+
+Lets crack the password using hydra : [4567][ssh] host: 10.10.231.35   login: sam   password: chocolate
+
+Lets SSH :
+
+We found flag1.txt : THM{dec4389bc09669650f3479334532aeab}
+
+No as the room suggests lets look at cronjobs, we can cat out /etc/crontab for this.
+
+Nothing here,
+
+Lets check home directory,
+
+We haev another user ubuntu and a folder named scripts
+
+In ubuntu folder we have the flag2.txt file.
+
+In scripts dir we have the clean_up.sh script, modifying it we can validate it is running every minutes.
+
+Lets use this to change file permission of flag2.txt : chmod 777 /home/ubuntu/flag2.txt
+
+Wait for cron job to finish :
+
+We can cat out the flag : THM{b27d33705f97ba2e1f444ec2da5f5f61}
+
+!!!
+

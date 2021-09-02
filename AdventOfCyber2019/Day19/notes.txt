@@ -1,0 +1,23 @@
+IP : 10.10.71.48
+
+Port to enum : 3000
+
+Navigating to web server we found that : christmas monster was here.
+
+We also have something interesting from task : /api/cmd
+
+Navigating and putting /ls after /api/cmd we get the directory listing.
+
+passing ls home we found 2 users : ec2-user and bestadmin
+
+passing : http://10.10.71.48:3000/api/cmd/ls%20%2Fhome%2Fbestadmin :
+
+	We got : {"stdout":"bin\nnew-room\nrun.sh\nuser.txt\n","stderr":""}
+
+We can see there is user.txt is there.
+
+Lets use cat to see the output : 
+
+We found the flag : 5W7WkjxBWwhe3RNsWJ3Q
+
+!!!

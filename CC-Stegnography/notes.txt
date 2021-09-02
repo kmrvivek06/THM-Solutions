@@ -1,0 +1,55 @@
+
+Steghide : JPEG
+
+A downside of steghide is that it only works on jpgs; however, that means that if you believe there is a hidden message inside a jpg, then steghide is a probable option.
+
+
+zsteg : PNG, BMP
+
+zsteg is to png's what steghide is to jpg's. It supports various techniques to extract any and all data from png files.
+Note: zsteg also supports BMP files, but it is primarily used for png's.
+
+
+Exiftool : 
+
+Exiftool is a tool that allows you to view and edit image metadata. While this in itself is not a stego tool, I would be remiss not to include at least a footnote on it as one of the most popular forms of image stego is to hide messages in the metadata.
+
+
+Stegoveritas:
+
+It supports just about every image file, and is able to extract all types of data from it. It is an incredibly useful tool if you don't know exactly what you're looking for, as it has a myriad of built in tests to extract any and all data.
+Note: Stegoveritas has other features as well such as color correcting images
+
+Stegoveritas can be installed by running these two commands:
+
+	pip3 install stegoveritas 
+	stegoveritas_install_deps
+
+
+Spectograms:
+
+Spectrogram stegonography is the art of hiding hidden an image inside in an audio file's spectogram. Therefore when ever dealing with audio stego it is always worth analyzing the spectrogram of the audio. To do this task we will be using Sonic Visualizer.
+
+After opening file, click Layer->Add Spectrogram.
+
+
+
+Final Test : 
+
+	IP : 10.10.90.141
+	Open Ports : 80
+
+Task1: exam1.jpeg
+	efiftool : password=admin
+	Steghide : superkeykey
+
+
+Task2: exam2.wav
+	Sonic-visualiser : https://imgur.com/KTrtNI5
+	Png image : zsteg : b1,bgr,lsb,xy       .. text: "\rKey: fatality"
+
+Task3: qrcode.pgn
+	Steg-solve : Red pane 4
+	scan : key=killshot
+
+!!!

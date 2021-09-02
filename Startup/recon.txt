@@ -1,0 +1,78 @@
+IP : 10.10.108.105
+
+Open Ports : 21,22,80
+
+21 : anonymous login allowed:
+	Found three files : 
+	1. important.jpg : strange - file is jpg but header is png : found hidden text with zsteg : Uwwwwwwwwwwww
+	2. notice.txt : got a potential user name : maya
+	3. .test.log : nothing here
+
+
+80 : Found hidden dir : /files
+
+/files : same directory as ftp
+
+Login to ftp again, We dont have write permissions for the default directory but we have it in ftp directory
+
+Put a reverse shell there
+
+Trigger it by web or curl and we have a shell,
+
+We landed in /
+
+We have recipe.txt here : secret ingredient : love
+
+User name found in home : lennie
+
+We cannot access it directly.
+
+Lets run linpeas.
+
+There are two unexpected folders in system root ie. /
+
+We found a suspicious.pcapng file in incidents dir. lets get it.
+
+Analysing the pcap file we got an possible password string : c4ntg3t3n0ughsp1c3
+
+lets use it to login to the user accounts : lennie and vagrant
+
+we got in as lennie.
+
+Lets get the use flag : THM{03ce3d619b80ccbfb3b7fc81e46c0e79}
+
+We found an scripts directoy.
+
+We found three files:
+	planner.sh,
+	startup_list.txt
+
+The planner.sh adds $LIST variable to startup_list.txt and calls /etc/print.sh
+
+The above two files are owned by root so we cannot modify it we can only run it.
+
+However we can modify the /etc/print.sh file since it is owned by lennie
+
+Also in linpeas we see that the planner.sh file is already running in the processes. May be it is a cron job but not visible or set in crontab
+
+Lets add a reverse shell to it and get back a shell as root.
+
+Wait for few minutes for cron to run.
+
+We have a root shell : we can get the root flag : THM{f963aaa6a430f210222158ae15c3d76d}
+
+Another way we can modify the print.sh file as :
+
+cat > /etc/print.sh <<EOF
+>#!/bin/bash
+>cp /bin/bash /tmp/bash
+>chmod 4755 /tmp/bash
+>EOF
+
+Wai for the cron to run, here /tmp/bash will have suid bit set to allow it to run as root.
+
+run /tmp/bash -p : -p to utilise SUID privillege
+
+We will get a root shell.
+
+!!!

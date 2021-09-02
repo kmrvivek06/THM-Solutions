@@ -1,0 +1,15 @@
+Get-ChildItem -File -Hidden -ErrorAction SilentlyContinue
+
+Get-Content -Path file.txt | Measure-Object -Word
+
+(Get-Content -Path file.txt)[index]
+
+Set-Location -Path c:\users\administrator\desktop
+
+Select-String -Path 'c:\users\administrator\desktop' -Pattern '*.pdf'
+
+Get-FileHash -Algorithm MD5 file.txt
+
+Get-Item -Path file.exe -Stream *
+
+wmic process call create $(Resolve-Path file.exe:streamname)

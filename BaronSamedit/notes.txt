@@ -1,0 +1,25 @@
+IP : 10.10.20.195
+
+SUDO Vulnerability : CVE-2021-3156
+
+Credentials : tryhackme:tryhackme
+
+SSH : 
+
+Go to directory Exploit.
+
+run make to create the exploit.
+
+exploit created : sudo-hax-me-a-sandwich
+
+run the exploit to see possible options
+
+run exploit with option as positional args to execute the exploit.
+
+We got a root shell.
+
+Navigate and cat out /root/root.txt
+
+Got the flag : THM{NmU4OWYwMWJmMjkxMDdiYTU4MWIxNWVk}
+
+!!!

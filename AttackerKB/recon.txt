@@ -1,0 +1,27 @@
+IP : 10.10.130.167
+
+Open Ports : 22, 10000
+
+10000 : Webmin, miniserv - 1.890
+
+View certificate : new hostname : source
+
+Check AttackerKB : Search webmin,
+
+Go to password_change.cgi : vulnerable version with default setting : 1.890
+
+This was a supply chain attack
+
+Check th link : https://www.webmin.com/exploit.html
+
+Webmin was informed of 0day exploit on : August 17th 2019
+
+This exploit was added in Metasploit in pill no. : 12219
+
+Use the Metasploit module to gain a shell.
+
+Navigate to /home/dark and cat out user.txt : THM{SUPPLY_CHAIN_COMPROMISE}
+
+Navigate to /root and cat out root.txt : THM{UPDATE_YOUR_INSTALL}
+
+!!!

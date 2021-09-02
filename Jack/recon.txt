@@ -1,0 +1,92 @@
+IP : 10.10.0.100
+
+Open Ports : 
+	22 -> Web
+	80 -> SSH
+
+Looking at the Source of web at port 22:
+	Website of a toy maker
+	encoded string : UmVtZW1iZXIgdG8gd2lzaCBKb2hueSBHcmF2ZXMgd2VsbCB3aXRoIGhpcyBjcnlwdG8gam9iaHVudGluZyEgSGlzIGVuY29kaW5nIHN5c3RlbXMgYXJlIGFtYXppbmchIEFsc28gZ290dGEgcmVtZW1iZXIgeW91ciBwYXNzd29yZDogdT9XdEtTcmFxCg==
+	decoded string contains password : u?WtKSraq
+	it also contains a name : Johny Grave lets check that out.
+	Johny Grave :	We found gis favorite crypto method at twitter.com/GravesJohny
+		My Favourite Crypto Method:
+		First encode your message with a ROT13 cipher. Next Convert it to Hex. Finally convert the result into Base32.
+		It's uncrackable!
+
+	URLS ->
+		assets/stego.jpg
+		assets/jackinthebox.jpg
+		assets/header.jpg
+	Recovery path:
+		/recover.php
+
+Lets check the directories.
+
+	Image : stego.jpg ->
+		header : jfif
+		Steghide is giving error without password.
+		Lets try the password we got in the base64 decoding.
+			We got in but with a message that we are using wrong image.
+
+	Image : jackinthebox.jpg ->
+		header : jfif
+		Steghide is giving error without password and the old password is not working.
+		
+
+	Image : header.jpg ->
+		header : jfif
+		Steghide worked with the given password and we got an username and password to a CMS.
+		username : jackinthebox
+		password : TplFxiSHjY
+
+Lets check /recovery.php
+	It asks for a username and password to provide us with machine password.
+	Lets check :
+		We got a message from future jack with a new direcort : nnxhweOV
+		Lets scan that directory.
+		Nothing here
+	Lets check the source of recover.php:
+		We found another long string  : GQ2TOMRXME3TEN3BGZTDOMRWGUZDANRXG42TMZJWG4ZDANRXG42TOMRSGA3TANRVG4ZDOMJXGI3DCNRXG43DMZJXHE3DMMRQGY3TMMRSGA3DONZVG4ZDEMBWGU3TENZQGYZDMOJXGI3DKNTDGIYDOOJWGI3TINZWGYYTEMBWMU3DKNZSGIYDONJXGY3TCNZRG4ZDMMJSGA3DENRRGIYDMNZXGU3TEMRQG42TMMRXME3TENRTGZSTONBXGIZDCMRQGU3DEMBXHA3DCNRSGZQTEMBXGU3DENTBGIYDOMZWGI3DKNZUG4ZDMNZXGM3DQNZZGIYDMYZWGI3DQMRQGZSTMNJXGIZGGMRQGY3DMMRSGA3TKNZSGY2TOMRSG43DMMRQGZSTEMBXGU3TMNRRGY3TGYJSGA3GMNZWGY3TEZJXHE3GGMTGGMZDINZWHE2GGNBUGMZDINQ=
+
+	
+Lets try to decode the string using John Graves method:
+	we found the following link:
+		Remember that the credentials to the recovery login are hidden on the homepage! I know how forgetful you are, so here's a hint: bit.ly/2TvYQ2S
+
+It points out to the same thing. Lets check that recovery login again.
+	He is asking for a cmd to execute. lets check
+	added ?cmd=ls
+	It works!!!
+
+Lets see how we can execute a reverse shell:
+	Lets check on pentest monkey.
+	We got a shell using python.
+
+Lets enumerate:
+	We found a password list for jack.
+	Nothing much found
+
+Lets bruteforce jscks ssh:
+	We found the password for jack
+	usename : jack
+	password : ITMJpGGIqg1jn?>@
+
+Lets SSH:
+	We are in. Lets enumerate.
+
+PrivEsc:
+	Check sudo permissions
+		No sudo permissions
+	Check for suid with root
+		find / -type f -user root -perm -4000 -exec ls -ldb {} \; 2>>/dev/null
+		
+		We found strings can be run as root with SUID
+
+		Lets check GTFOBins
+		We found an exploit to read files.
+			LFILE=file_to_read
+			./strings "$LFILE"
+		Using this lets run > strings /root/root.txt
+
+		We found the flag...

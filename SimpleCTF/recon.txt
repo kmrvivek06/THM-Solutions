@@ -1,0 +1,24 @@
+IP -> 10.10.122.104
+Open ports -> 21,80,2222(SSH)
+
+21 : Anaonymous login allowed on 21
+
+80 : Ubuntu default page
+
+	hidden dirs : simple
+		CMS : cms made simple
+		CVE : sql injection
+
+After Exploit :
+
+	We got an username and password
+
+SSH -> found user.txt
+
+Vim can be used as sudo
+
+used vim privesc :! /bin/bash
+
+found root flag in /root
+
+Complete!!!

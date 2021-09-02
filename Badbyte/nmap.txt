@@ -1,0 +1,37 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-22 13:07 EDT
+Stats: 0:03:44 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 45.21% done; ETC: 13:16 (0:04:32 remaining)
+Stats: 0:09:28 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 89.94% done; ETC: 13:18 (0:01:03 remaining)
+Stats: 0:10:57 elapsed; 0 hosts completed (1 up), 1 undergoing SYN Stealth Scan
+SYN Stealth Scan Timing: About 99.99% done; ETC: 13:18 (0:00:00 remaining)
+Nmap scan report for 10.10.232.210
+Host is up (0.13s latency).
+Not shown: 65533 closed ports
+PORT      STATE SERVICE VERSION
+22/tcp    open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 e3:89:a3:33:67:85:ac:08:a5:0f:1a:d4:79:78:d2:66 (RSA)
+|   256 c1:93:e9:26:b8:9b:85:bc:c2:8e:08:a2:a4:85:f6:85 (ECDSA)
+|_  256 dd:e1:5c:32:d1:fc:a3:c5:4a:0e:bf:c8:c2:79:e4:71 (ED25519)
+30024/tcp open  ftp     vsftpd 3.0.3
+| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+| -rw-r--r--    1 ftp      ftp          1752 Dec 27 19:55 id_rsa
+|_-rw-r--r--    1 ftp      ftp            78 Dec 28 16:50 note.txt
+| ftp-syst: 
+|   STAT: 
+| FTP server status:
+|      Connected to ::ffff:10.9.241.177
+|      Logged in as ftp
+|      TYPE: ASCII
+|      No session bandwidth limit
+|      Session timeout in seconds is 300
+|      Control connection is plain text
+|      Data connections will be plain text
+|      At session startup, client count was 3
+|      vsFTPd 3.0.3 - secure, fast, stable
+|_End of status
+Service Info: OSs: Linux, Unix; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 667.06 seconds

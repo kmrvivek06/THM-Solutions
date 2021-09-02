@@ -1,0 +1,11 @@
+Image : TheGrinch.jpg
+
+Use exiftool : creator : JLolax1
+
+Check for profiles : twitter found :
+
+DOB : December 29, 1900
+Occupation : Santa's Helper
+Phone make : iPhone
+Started Photogrphy : 23/10/2014 
+Famous woman on webpage : Ada Lovelace

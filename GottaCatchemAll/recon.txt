@@ -1,0 +1,63 @@
+IP : 10.10.16.158
+
+Open Ports : 22,80
+
+Found some pokemon entries in console:
+
+0: "Bulbasaur"
+​
+1: "Charmander"
+​
+2: "Squirtle"
+​
+3: "Snorlax"
+​
+4: "Zapdos"
+​
+5: "Mew"
+​
+6: "Charizard"
+​
+7: "Grimer"
+​
+8: "Metapod"
+​
+9: "Magikarp"
+
+We also find some tags : <pokemon>:<hack_the_pokemon>
+Looks like username and password, lets ssh :
+
+We are in.
+
+Lets enumerate.
+
+We found a P0kEmOn.zip file in dektop, getting that with scp
+
+Unzip and we gound grass type.txt : 50 6f 4b 65 4d 6f 4e 7b 42 75 6c 62 61 73 61 75 72 7d
+Looks like hexadecimal : PoKeMoN{Bulbasaur}
+
+Lets move to /var/www/html : found water-type.txt : Ecgudfxq_EcGmP{Ecgudfxq} : rot14 > Squirtle_SqUaD{Squirtle}
+
+We found another user : ash and roots pokemon.txt in /home directory
+
+Lets upload linpeas and check
+
+We also found a Gotta directory owned by pokemon, in videos, lets travers that.
+
+We found a c file containing credentials : "ash : pikapika"
+
+Lets change the user.
+
+We can read roots_pokemon.txt : Pikachu!
+
+Looks like we can run all commands as root : 
+	User ash may run the following commands on root:
+	(ALL : ALL) ALL
+
+Lets run sudo su :
+
+We are root but still we have not found fire-type so lets use find command : /etc/why_am_i_here?/fire-type.txt
+
+Lets get the pokemon : UDBrM20wbntDaGFybWFuZGVyfQ== : base64 : P0k3m0n{Charmander}
+
+!!!

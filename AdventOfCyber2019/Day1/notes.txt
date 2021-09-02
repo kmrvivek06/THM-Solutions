@@ -1,0 +1,12 @@
+IP : 10.10.215.162
+
+Port to enum : 3000
+
+Create multiple ids and login:
+
+coockie name : authid
+Common cookie value decode base64 : v4er9ll1!ss7
+Change the vlue and encode, set cookie value and refresh
+
+mcinventory request : firewall
+

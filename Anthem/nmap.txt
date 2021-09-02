@@ -1,0 +1,23 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-02-04 10:03 EST
+Nmap scan report for 10.10.53.219
+Host is up (0.20s latency).
+Not shown: 998 filtered ports
+PORT     STATE SERVICE       VERSION
+80/tcp   open  http          Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)
+3389/tcp open  ms-wbt-server Microsoft Terminal Services
+| rdp-ntlm-info: 
+|   Target_Name: WIN-LU09299160F
+|   NetBIOS_Domain_Name: WIN-LU09299160F
+|   NetBIOS_Computer_Name: WIN-LU09299160F
+|   DNS_Domain_Name: WIN-LU09299160F
+|   DNS_Computer_Name: WIN-LU09299160F
+|   Product_Version: 10.0.17763
+|_  System_Time: 2021-02-04T15:04:40+00:00
+| ssl-cert: Subject: commonName=WIN-LU09299160F
+| Not valid before: 2021-01-02T15:57:43
+|_Not valid after:  2021-07-04T15:57:43
+|_ssl-date: 2021-02-04T15:05:46+00:00; +1s from scanner time.
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 109.17 seconds

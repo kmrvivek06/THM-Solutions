@@ -1,0 +1,56 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-09 09:29 EST
+NSE: Loaded 153 scripts for scanning.
+NSE: Script Pre-scanning.
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Initiating Ping Scan at 09:29
+Scanning 10.10.211.222 [4 ports]
+Completed Ping Scan at 09:29, 0.23s elapsed (1 total hosts)
+Initiating Parallel DNS resolution of 1 host. at 09:29
+Completed Parallel DNS resolution of 1 host. at 09:29, 0.01s elapsed
+Initiating SYN Stealth Scan at 09:29
+Scanning 10.10.211.222 [1000 ports]
+Discovered open port 80/tcp on 10.10.211.222
+Discovered open port 22/tcp on 10.10.211.222
+Completed SYN Stealth Scan at 09:29, 2.07s elapsed (1000 total ports)
+Initiating Service scan at 09:29
+Scanning 2 services on 10.10.211.222
+Completed Service scan at 09:29, 6.60s elapsed (2 services on 1 host)
+NSE: Script scanning 10.10.211.222.
+Initiating NSE at 09:29
+Completed NSE at 09:29, 12.36s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.93s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Nmap scan report for 10.10.211.222
+Host is up (0.24s latency).
+Not shown: 998 closed ports
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   2048 94:96:1b:66:80:1b:76:48:68:2d:14:b5:9a:01:aa:aa (RSA)
+|   256 18:f7:10:cc:5f:40:f6:cf:92:f8:69:16:e2:48:f4:38 (ECDSA)
+|_  256 b9:0b:97:2e:45:9b:f3:2a:4b:11:c7:83:10:33:e0:ce (ED25519)
+80/tcp open  http    Apache httpd 2.4.18 ((Ubuntu))
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-server-header: Apache/2.4.18 (Ubuntu)
+|_http-title: Apache2 Ubuntu Default Page: It works
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+NSE: Script Post-scanning.
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.01s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Initiating NSE at 09:29
+Completed NSE at 09:29, 0.00s elapsed
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 24.16 seconds
+           Raw packets sent: 1101 (48.420KB) | Rcvd: 1098 (43.916KB)

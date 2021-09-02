@@ -1,0 +1,19 @@
+IP : 10.10.44.140
+
+Open Ports : 22, 80
+
+Hidden Dirs : 
+	/docs (Status: 301)
+	/external (Status: 301)
+	/config (Status: 301)
+	/vulnerabilities (Status: 301)
+
+We found credentials in docs dir in a pdf : admin & password
+
+Lets try that:
+
+We are in the web panel
+
+For SSH it needs an rsa key.
+
+

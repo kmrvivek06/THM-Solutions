@@ -1,0 +1,41 @@
+Downloasded File : Challenge.Challenge
+
+File Type : 
+
+Challenge.Challenge: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, 
+interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=b80ce38cb25d043128bc2c4e1e122c3d4fbba7f7, for 
+GNU/Linux 3.2.0, not stripped
+  
+Lets rut this with ltrace:
+
+┌──(kali㉿kali)-[~/TryHackMe/ClassicPasswd]
+└─$ ltrace ./Challenge.Challenge
+printf("Insert your username: ")                                        = 22
+__isoc99_scanf(0x559b6840501b, 0x7ffc0bf33650, 0, 0Insert your username: ssss
+)                    = 1
+strcpy(0x7ffc0bf335c0, "ssss")                                          = 0x7ffc0bf335c0
+strcmp("ssss", "AGB6js5d9dkG7")                                         = 50
+puts("\nAuthentication Error"
+Authentication Error
+)                                          = 22
+exit(0 <no return ...>
++++ exited (status 0) +++
+                                                                                                                     
+┌──(kali㉿kali)-[~/TryHackMe/ClassicPasswd]
+└─$ 
+
+We found strcpy and strcmp functions:
+Lets check the string compare strcmp function address.
+It matches our entered string 'ssss' in this case with real username. which is "AGB6js5d9dkG7"
+
+Lets run echo "AGB6js5d9dkG7" | ./Challenge.Challenge
+
+We got in with a flag as result.
+
+┌──(kali㉿kali)-[~/TryHackMe/ClassicPasswd]
+└─$ echo "AGB6js5d9dkG7" | ./Challenge.Challenge                                           
+Insert your username: 
+Welcome
+THM{65235128496} 
+
+!!!

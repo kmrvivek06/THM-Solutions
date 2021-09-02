@@ -1,0 +1,16 @@
+echo '43616e64792043616e652053657269616c204e756d6265722038343931' | xxd -r -p
+	: Candy Cane Serial Number 8491
+
+Filter get request:
+
+File found : christmas.zip
+
+Follow tcp stream and save the file
+
+It is password protected : crack using zip2john and john
+
+Password : december
+
+Timmy want to be : PenTester
+
+Hidden inside : poem : RFC527

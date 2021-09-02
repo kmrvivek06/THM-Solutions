@@ -1,0 +1,11 @@
+unzip all archives : unzip \*.zip
+
+Select all .txt files : ls | grep txt
+
+50 text files
+
+File containing password : grep password * : dL6w.txt
+
+Metadata having Version : 1.1 : exiftool * | grep 'Version\s*: 1.1' : 3
+
+!!!

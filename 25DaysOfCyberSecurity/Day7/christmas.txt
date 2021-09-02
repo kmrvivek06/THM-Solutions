@@ -1,0 +1,49 @@
+No.     Time           Source                Destination           Protocol Length Info
+    166 11.665107      10.10.53.219          10.10.21.210          HTTP     139    GET / HTTP/1.1 
+
+Frame 166: 139 bytes on wire (1112 bits), 139 bytes captured (1112 bits)
+Ethernet II, Src: 02:cd:4e:c8:87:f1 (02:cd:4e:c8:87:f1), Dst: MS-NLB-PhysServer-07_7b:6f:c0:01 (02:07:7b:6f:c0:01)
+Internet Protocol Version 4, Src: 10.10.53.219, Dst: 10.10.21.210
+Transmission Control Protocol, Src Port: 38454, Dst Port: 80, Seq: 1, Ack: 1, Len: 73
+Hypertext Transfer Protocol
+    GET / HTTP/1.1\r\n
+        [Expert Info (Chat/Sequence): GET / HTTP/1.1\r\n]
+            [GET / HTTP/1.1\r\n]
+            [Severity level: Chat]
+            [Group: Sequence]
+        Request Method: GET
+        Request URI: /
+        Request Version: HTTP/1.1
+    Host: tbfc.blog\r\n
+    User-Agent: curl/7.58.0\r\n
+    Accept: */*\r\n
+    \r\n
+    [Full request URI: http://tbfc.blog/]
+    [HTTP request 1/1]
+    [Response in frame: 168]
+
+No.     Time           Source                Destination           Protocol Length Info
+    291 26.537049      10.10.53.219          10.10.21.210          HTTP     215    GET /christmas.zip HTTP/1.1 
+
+Frame 291: 215 bytes on wire (1720 bits), 215 bytes captured (1720 bits)
+Ethernet II, Src: 02:cd:4e:c8:87:f1 (02:cd:4e:c8:87:f1), Dst: MS-NLB-PhysServer-07_7b:6f:c0:01 (02:07:7b:6f:c0:01)
+Internet Protocol Version 4, Src: 10.10.53.219, Dst: 10.10.21.210
+Transmission Control Protocol, Src Port: 38456, Dst Port: 80, Seq: 1, Ack: 1, Len: 149
+Hypertext Transfer Protocol
+    GET /christmas.zip HTTP/1.1\r\n
+        [Expert Info (Chat/Sequence): GET /christmas.zip HTTP/1.1\r\n]
+            [GET /christmas.zip HTTP/1.1\r\n]
+            [Severity level: Chat]
+            [Group: Sequence]
+        Request Method: GET
+        Request URI: /christmas.zip
+        Request Version: HTTP/1.1
+    User-Agent: Wget/1.19.4 (linux-gnu)\r\n
+    Accept: */*\r\n
+    Accept-Encoding: identity\r\n
+    Host: tbfc.blog\r\n
+    Connection: Keep-Alive\r\n
+    \r\n
+    [Full request URI: http://tbfc.blog/christmas.zip]
+    [HTTP request 1/1]
+    [Response in frame: 395]

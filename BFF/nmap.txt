@@ -1,0 +1,14 @@
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-01-17 05:47 EST
+Nmap scan report for 10.10.151.10
+Host is up (0.37s latency).
+Not shown: 997 closed ports
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.1 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http    Node.js (Express middleware)
+|_http-title: BFFs
+3000/tcp open  http    Node.js (Express middleware)
+|_http-title: BFFs
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 28.04 seconds

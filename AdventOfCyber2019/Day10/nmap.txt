@@ -1,0 +1,28 @@
+Starting Nmap 7.91 ( https://nmap.org ) at 2021-03-16 20:23 EDT
+Nmap scan report for 10.10.108.136
+Host is up (0.13s latency).
+Not shown: 997 closed ports
+PORT    STATE SERVICE VERSION
+22/tcp  open  ssh     OpenSSH 7.4 (protocol 2.0)
+| ssh-hostkey: 
+|   2048 27:90:9b:95:be:a5:08:85:f9:d8:3b:4a:f1:12:9a:bd (RSA)
+|   256 15:a5:73:e7:21:41:3f:f5:24:20:39:88:9b:a5:2a:a5 (ECDSA)
+|_  256 da:26:f5:f2:97:6d:fd:b6:56:9b:7e:d1:03:26:3d:26 (ED25519)
+80/tcp  open  http    Apache Tomcat/Coyote JSP engine 1.1
+|_http-server-header: Apache-Coyote/1.1
+| http-title: Santa Naughty and Nice Tracker
+|_Requested resource was showcase.action
+111/tcp open  rpcbind 2-4 (RPC #100000)
+| rpcinfo: 
+|   program version    port/proto  service
+|   100000  2,3,4        111/tcp   rpcbind
+|   100000  2,3,4        111/udp   rpcbind
+|   100000  3,4          111/tcp6  rpcbind
+|   100000  3,4          111/udp6  rpcbind
+|   100024  1          35876/udp   status
+|   100024  1          39685/tcp6  status
+|   100024  1          41342/udp6  status
+|_  100024  1          48547/tcp   status
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 15.03 seconds

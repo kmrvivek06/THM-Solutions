@@ -1,0 +1,48 @@
+IP : 10.10.123.87
+
+Open Ports : 80,
+
+Found Wordpress Site :
+
+Run http-wordpress-enum script with nmap for vuln scanning.
+
+Nothing here:
+
+Lets run wpscan :
+
+	Found some user ids : 
+		c0ldd
+		hugo
+		philip
+
+Lets use hydra to brute it.
+
+We found a possible login : [80][http-post-form] host: 10.10.123.87   login: c0ldd   password: 9876543210
+
+Lets login : 
+
+Lets upload a reverse shell as a plugin.
+
+	Once we activate the plugin, we receive a shell.
+
+Go back one directory we found a hidden directory : 
+
+	there we have an index.html, lets cat that :
+
+	message : C0ldd, you changed Hugo's password, when you can send it to him so he can continue uploading his articles. Philip
+
+PrivEsc :
+
+	Lets fire up linpeas.
+
+We found find binary with suid, lets check taht out.
+
+We foud an exploit and now we are root.
+
+Lets get the flags : 
+
+	user.txt : RmVsaWNpZGFkZXMsIHByaW1lciBuaXZlbCBjb25zZWd1aWRvIQ==
+
+	root.txt : wqFGZWxpY2lkYWRlcywgbcOhcXVpbmEgY29tcGxldGFkYSE=
+
+!!!

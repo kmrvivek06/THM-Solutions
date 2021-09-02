@@ -1,0 +1,73 @@
+IP : 10.10.3.53
+Open Ports : 21,22,80
+
+80 : message to set user-agen parameter in request:
+
+Fire up burp : Send request to intruder and use A-Z
+
+Got redirect for C
+
+Lets check that out.
+
+We got redirected to page : agent_C_attention.php
+
+we got name : chris
+
+Now as suggested we have to brute our way in.
+
+Lets bruteforce ftp
+	found password : crystal
+
+Lets login:
+We got two images and one textfile
+
+Message in textfile that we have credentials hidden in these images.
+
+Using strings on both images we found that there is something in cutie.png
+
+Lets extract hidden file.
+
+Using binwalk we are able to extract a zip file, an empty text file.
+
+The zip file is encrypted lets use zip2john and then john to crack.
+
+We found the password is alien.
+
+Lets unzip the file.
+	We get a message that : We need to send pictures to 'QXJlYTUx'
+
+This looks like base 64, lets decode : Area51
+
+Lets use this with steghide.
+
+We found username and password : james:hackerrules!
+
+Lets SSH
+
+We found user's flag : b03d975e8c92a7c04146cfa7a5a313c7
+
+We found another image lets get that with scp
+
+Doing reverse image search we found it is from : Roswell alien autopsy
+
+
+
+PrivEsc:
+
+Running sudo -l :
+	User james may run the following commands on agent-sudo:                                                             │                                                                                                                     
+    	(ALL, !root) /bin/bash
+
+Lets search for (ALL, !root) /bin/bash
+
+We found the CVE :  2019-14287 
+
+It suggetst to run : sudo -u#-1 /bin/bash to bypass the block, lets check that out.
+
+We got the root shell.
+
+Lets get the flag : b53a02f55b57d4439e3341834d70c062
+
+We found Aget R : DesKel
+
+!!!

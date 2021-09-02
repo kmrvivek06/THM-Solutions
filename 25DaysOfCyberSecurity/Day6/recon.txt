@@ -1,0 +1,10 @@
+IP : 10.10.0.13
+
+Web Service : 10.10.0.13/5000
+
+Start zap and set the proxy
+
+We foud two alerts for XSS
+
+The site is vulnerable to : stored cross-site scripting
+

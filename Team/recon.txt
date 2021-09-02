@@ -1,0 +1,117 @@
+IP : 10.10.41.18
+
+Open Ports : 21, 22, 80
+
+Enumeration :
+
+80 : Default apache page : We have directions in title for adding team.htm in hosts file
+
+We found the website.
+
+Run gobuster:
+
+/images (Status: 301)
+/index.html (Status: 200)
+/scripts (Status: 301)
+/assets (Status: 301)
+/robots.txt (Status: 200)
+
+
+In robots.txt we found a potential name : dale.
+
+Maybe We can bruteforce ftp. No Luck,
+
+Looking at directories we found a scripts dierectory: brute it : script.txt : 
+
+	We found a note : # Note to self had to change the extension of the old "script" in this folder, as it has creds in
+
+Brute it with old added as extention : script.old :
+	ftpuser : T3@m$h@r3
+
+	also found another user name : gyles
+
+Lets check the ftp now : We found a new file New_site.txt : We found that we have nother site as .dev
+
+Lets add to host file and check that out : 
+
+	We can see the new site, it uses a placeholder, with parameter page?= for page disaply, lets check for LFI
+
+Using /etc/passwd we can see that we have LFI.
+
+Lets check for common linux files. Wrodlist : SecLists/Fuzzing/LFI/LFI-gracefulsecurity-linux.txt
+
+We found dale's private key : 
+
+Login vai SSH : 
+
+We found the user's flag : THM{6Y0TXHz7c2d}
+
+
+PrivEsc : 
+
+We can use sudo to run something as gyles:
+
+	(gyles) NOPASSWD: /home/gyles/admin_checks
+
+Lets check that out.
+
+#!/bin/bash
+
+printf "Reading stats.\n"
+sleep 1
+printf "Reading stats..\n"
+sleep 1
+read -p "Enter name of person backing up the data: " name
+echo $name  >> /var/stats/stats.txt
+read -p "Enter 'date' to timestamp the file: " error
+printf "The Date is "
+$error 2>/dev/null
+
+date_save=$(date "+%F-%H-%M")
+cp /var/stats/stats.txt /var/stats/stats-$date_save.bak
+
+printf "Stats have been backed up\n"
+
+
+We can use the $error variable used to capture date as it is being passed to system call.
+
+dale@TEAM:~$ sudo -u gyles /home/gyles/admin_checks
+Reading stats.
+Reading stats..
+Enter name of person backing up the data: abc
+Enter 'date' to timestamp the file: /bin/bash
+The Date is 
+python3 -c "import pty; pty.spawn('/bin/bash')"
+gyles@TEAM:~$ ls
+
+
+Now we are gyles, since we dont know his password we cannot use sudo.
+
+Lets upload linpeas.
+
+User groups identified as admins : 
+
+	AdminIdentities=unix-group:sudo;unix-group:admin
+
+We found that our user belong to admin group : 
+
+	uid=1001(gyles) gid=1001(gyles) groups=1001(gyles),1003(editors),1004(admin)  
+
+We found a backup script belonging to admin group : /usr/local/bin/main_backup.sh
+
+Lets check that out.
+
+We have write permissions to it, lets check what it does : 
+
+it copies file : cp -r /var/www/team.thm/* /var/backups/www/team.thm/
+
+Lets use it to get a reverse shell.
+
+Setup the listener and wait for cron job to run :
+
+We got a reverse shell
+
+Navigate and cat /root/root.txt : THM{fhqbznavfonq}
+
+!!!
+

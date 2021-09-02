@@ -1,0 +1,35 @@
+IP : 10.10.167.91
+
+Open Ports : 80
+
+Check for SQL Injection with sqlmap : sqlmap -u http://10.10.167.91/register.php --forms --dump
+
+field vulnerable : log_email
+
+In user's table we found santa's details : bigman@shefesh.com     | f1267830a78c0b59acc06b05694b2e28 | santa_claus
+
+Crack the password with john : saltnpepper
+
+Login with santa's credentials : 
+
+go to messages with mistletoe : 
+
+You and Mommy Mistletoe
+
+XSanta, I think my son Michael saw us kissing underneath the misteltoe last night! Meet me under the clock in Waterloo station at Midnight.
+
+XMrs Mistletoe, you're certainly on the naughty list this year! See you there, Kris x
+
+Santa is meeting at : waterloo
+
+Lets try and upload a reverse shell here.
+
+We are not allowed to upload php shell. Lets fire that up in Burp and change file extention with intruder.
+
+We see that we can upload a php4 file lets rename and upload again.
+
+We got a shell.
+
+Get the flag from /home/user : THM{SHELLS_IN_MY_EGGNOG}
+
+!!!

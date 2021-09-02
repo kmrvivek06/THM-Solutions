@@ -1,0 +1,37 @@
+1. Check the file.
+	it is a svg image. 
+	Inspect the image.
+	In the svg tag we found a username : SakuraSnowAngelAiko
+
+2. Googling this username we found git repositories.
+	Check the PGP repo
+	Copy the key to an .asc file
+	Import using gpg command to get email id.
+		SakuraSnowAngel83@protonmail.com
+
+3. First name from github and last name from linkdin : Aiko Abe
+
+4. From git hub : Ethereum 
+
+5. ETH repo : stratum://ethwallet.workerid:password@miningpool:port 
+	Check history : 0xa102397dbeeBeFD8cD2F73A89122fCdB53abB6ef
+
+6. Ethermine
+
+7. tether
+
+8. @SakuraLoverAiko
+
+9. http://www.depastedihrn3jtw.onion/show.php?md5=0a5c6e136a98a60b8a21643ce8c15a74
+
+10. 84:AF:EC:34:FC:F8
+
+11. dca
+
+12. hnd
+
+13. Lake Inawashiro
+
+14. hirosaki
+
+

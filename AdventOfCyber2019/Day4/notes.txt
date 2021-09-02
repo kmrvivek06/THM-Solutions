@@ -1,0 +1,18 @@
+IP : 10.10.164.74
+
+SSH Port : 22
+
+Username : mcsysadmin
+
+Password : bestelf1234
+
+Lets SSH :
+
+no. of files : ls -la : 8 files
+content of file 5 : cat file5 > recipes
+find ip : grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' * : file2:10.0.0.05
+cat /etc/passwd : 3 users
+sha1 hash of file8 : sha1sum file8 : fa67ee594358d83becdd2cb6c466b25320fd2835
+mcsysadmin’s password hash : Found /var/shadow.bak : $6$jbosYsU/$qOYToX/hnKGjT0EscuUIiIqF8GHgokHdy/Rg/DaB.RgkrbeBXPdzpHdMLI6cQJLdFlS4gkBMzilDBYcQvu2ro/
+
+

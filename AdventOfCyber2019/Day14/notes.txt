@@ -1,0 +1,7 @@
+S3 bucket name : advent-bucket-one
+
+See file listing : http://advent-bucket-one.s3.amazonaws.com : employee_names.txt, test.txt
+
+See file content : http://advent-bucket-one.s3.amazonaws.com/employee_names.txt : mcchef
+
+!!!

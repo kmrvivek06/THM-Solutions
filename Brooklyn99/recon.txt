@@ -1,0 +1,33 @@
+IP : 10.10.234.73
+
+Open Ports : 21,22,80
+
+21 :  anonymous login allowed
+
+Got a note from Amy to Jake : Jake please change your password. It is too weak and holt will be mad if someone hacks into the nine nine
+
+80 : fuul page background image, comment hint towards stegnography.
+
+Cannot extract directly but there is a note about weak password.
+
+Lets use stegcracker
+
+	successfully cracked : admin
+
+Found holts password : fluffydog12@ninenine
+
+Letts SSH : 
+	holt : fluffydog12@ninenine
+
+We got the user flag : ee11cbb19052e40b07aac0ca060c23ee
+
+
+PrivEsc : 
+
+Running sudo -l we found that we can run nano as root. Cehck out GtfoBins :
+
+We got the root shell :
+
+Lets get root flag : 63a9f0ea7bb98050796b649e85481845
+
+!!!

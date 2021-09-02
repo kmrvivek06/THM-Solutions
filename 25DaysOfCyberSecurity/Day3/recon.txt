@@ -1,0 +1,6 @@
+IP : 10.10.139.218
+
+Load the usernames and passwords in burp suit, in cluster bomb mode to try each possible combination.
+
+Found username and Password : admin - 12345 
+Found the Flag : THM{885ffab980e049847516f9d8fe99ad1a}
